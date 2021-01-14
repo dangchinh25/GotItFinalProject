@@ -3,9 +3,11 @@ from flask import request, jsonify
 from main.app import app
 from main.db import db
 from main.models.category import CategoryModel
+from main.models.item import ItemModel
 
 from main.schemas.category import CategorySchema
-from main.helpers import validate_input, check_category_exist
+from main.schemas.item import ItemSchema
+from main.helpers import validate_input, check_category_exist, validate_token
 from main.exceptions import InternalServerError, NotFoundError
 
 
@@ -35,7 +37,23 @@ def get_category_items(category_id):
     return jsonify(req)
 
 
+@app.route("/categories/<int:category_id>/items", methods=["POST"])
+@validate_token
+@check_category_exist
+@validate_input(ItemSchema)
+def create_item(user_id, category, data):
+    new_item = ItemModel(user_id=user_id, category_id=category.id, **data)
+    try:
+        db.session.add(new_item)
+        db.session.commit()
+    except Exception as e:
+        raise InternalServerError()
+    
+    return jsonify(ItemSchema().dump(new_item)), 201
+
+
 @app.route("/categories", methods=["POST"])
+@validate_token
 @validate_input(CategorySchema)
 def create_category(data):
     # create new category
@@ -47,4 +65,5 @@ def create_category(data):
         raise InternalServerError()
 
     return jsonify(CategorySchema().dump(new_category)), 201
+
 

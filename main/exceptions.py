@@ -23,7 +23,9 @@ class UnauthorizedError(BaseError):
 
 
 class ForbiddenError(BaseError):
-    status_code = 403
+    def __init__(self):
+        self.status_code = 403
+        self.message = "Unauthorized user."
 
 
 class NotFoundError(BaseError):

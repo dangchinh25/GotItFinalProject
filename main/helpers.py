@@ -6,6 +6,7 @@ from marshmallow import ValidationError
 
 from main.exceptions import InvalidRequestError, InternalServerError, NotFoundError
 from main.models.category import CategoryModel
+from main.models.item import ItemModel
 
 from main.app import app
 
@@ -35,6 +36,19 @@ def check_category_exist(func):
         if not category:
             raise NotFoundError()
         return func(category=category, *args, **kwargs)
+    return check
+
+
+def check_item_exist(func):
+    @functools.wraps(func)
+    def check(*args, **kwargs):
+        try:
+            item = ItemModel.query.get(kwargs.pop("item_id"))
+        except Exception as e:
+            raise InternalServerError()
+        if not item:
+            raise NotFoundError()
+        return func(item=item, *args, **kwargs)
     return check
 
 
