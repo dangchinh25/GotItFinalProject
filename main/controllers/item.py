@@ -2,6 +2,8 @@ from flask import request, jsonify
 
 from main.app import app
 from main.db import db
+from main.models.item import ItemModel
+from main.schemas.item import ItemSchema
 
 
 @app.route("/items/<int:item_id>", methods=["GET"])

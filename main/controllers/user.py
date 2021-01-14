@@ -2,6 +2,8 @@ from flask import request, jsonify
 
 from main.app import app
 from main.db import db
+from main.models.user import UserModel
+from main.schemas.user import Schema
 
 
 @app.route("/users/signin", methods=["POST"])

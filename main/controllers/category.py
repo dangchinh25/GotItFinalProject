@@ -6,6 +6,7 @@ from main.models.category import CategoryModel
 
 from main.schemas.category import CategorySchema
 from marshmallow import ValidationError
+from main.helpers import validate_input
 
 
 @app.route("/categories", methods=["GET"])
@@ -26,12 +27,14 @@ def get_category_items(category_id):
 
 
 @app.route("/categories", methods=["POST"])
-def create_category():
-    data = request.get_json()
+@validate_input(CategorySchema)
+def create_category(data):
+    new_category = CategoryModel(name=data["name"])
     try:
-        CategorySchema().load(data)
+        db.session.add(new_category)
+        db.session.commit()
     except Exception as e:
         raise e
 
-    return jsonify(data)
+    return jsonify(CategorySchema().dump(new_category)), 201
 
