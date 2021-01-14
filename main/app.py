@@ -17,4 +17,4 @@ def create_tables():
 # Register error handler for our Flask app
 @app.errorhandler(Exception)
 def handle_customized_error(error):
-    return jsonify(message=error.messages(), error=error.error)
+    return error.messages()

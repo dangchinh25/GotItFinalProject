@@ -11,10 +11,9 @@ class BaseError(Exception):
 
 
 class InvalidRequestError(BaseError):
-    def __init__(self, error):
+    def __init__(self):
         self.status_code = 400
         self.message = "Invalid request data."
-        self.error = error
 
 
 class UnauthorizedError(BaseError):
@@ -26,4 +25,12 @@ class ForbiddenError(BaseError):
 
 
 class NotFoundError(BaseError):
-    status_code = 404
+    def __init__(self):
+        self.status_code = 404
+        self.message = "Not found error."
+
+
+class InternalServerError(BaseError):
+    def __init__(self):
+        self.status_code = 500
+        self.message = "Internal server error."
