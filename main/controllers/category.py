@@ -33,8 +33,13 @@ def get_category(category):
 @check_category_exist
 def get_category_items(category):
     # get all items of a particular category
+    try:
+        items = ItemSchema(many=True).dump(category.items.all())
+        total = category.items.count()
+    except Exception as e:
+        raise InternalServerError()
 
-    return jsonify({"items": ItemSchema(many=True).dump(category.items.all())}), 200
+    return jsonify({"items": items, "total": total}), 200
 
 
 @app.route("/categories/<int:category_id>/items", methods=["POST"])
