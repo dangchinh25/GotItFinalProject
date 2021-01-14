@@ -38,6 +38,23 @@ def check_category_exist(func):
     return check
 
 
+def validate_token(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            access_token = request.headers["Authorization"].split()[1]
+            data = jwt.decode(access_token, app.config["SECRET"], algorithms="HS256")
+            user_id = data["user_id"]
+        except Exception as e:
+            print(e)
+            raise InvalidRequestError()
+
+        return func(user_id=user_id, *args, **kwargs)
+
+    return wrapper
+
+
+
 def generate_token(user_id):
-    return jwt.encode({"user_id": user_id, "exp": datetime.utcnow() + timedelta(minutes=30)}, app.config["SECRET"])
+    return jwt.encode({"user_id": user_id, "exp": datetime.utcnow() + timedelta(minutes=30)}, app.config["SECRET"], algorithm="HS256")
 

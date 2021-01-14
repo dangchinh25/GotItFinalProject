@@ -7,7 +7,7 @@ from main.models.user import UserModel
 from main.schemas.user import UserSchema
 from main.helpers import validate_input
 from main.exceptions import InvalidRequestError, InternalServerError, UnauthorizedError
-from main.helpers import generate_token
+from main.helpers import generate_token, validate_token
 
 
 @app.route("/users/signin", methods=["POST"])
@@ -45,6 +45,7 @@ def signup(data):
     return jsonify({"access_token": generate_token(user.id)}), 201
 
 
-@app.route("/user/me", methods=["POST"])
-def get_current_user():
-    pass
+@app.route("/users/me", methods=["GET"])
+@validate_token
+def get_current_user(user_id):
+    return jsonify({"id": user_id})
