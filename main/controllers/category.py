@@ -30,11 +30,11 @@ def get_category(category):
 
 
 @app.route("/categories/<int:category_id>/items", methods=["GET"])
-def get_category_items(category_id):
+@check_category_exist
+def get_category_items(category):
     # get all items of a particular category
-    req = request.args.get("limit")
 
-    return jsonify(req)
+    return jsonify({"items": ItemSchema(many=True).dump(category.items.all())}), 200
 
 
 @app.route("/categories/<int:category_id>/items", methods=["POST"])
