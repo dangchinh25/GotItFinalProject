@@ -1,4 +1,6 @@
 import functools
+import jwt
+from datetime import datetime, timedelta
 from flask import request
 from marshmallow import ValidationError
 
@@ -34,4 +36,8 @@ def check_category_exist(func):
             raise NotFoundError()
         return func(category=category, *args, **kwargs)
     return check
+
+
+def generate_token(user_id):
+    return jwt.encode({"user_id": user_id, "exp": datetime.utcnow() + timedelta(minutes=30)}, app.config["SECRET"])
 

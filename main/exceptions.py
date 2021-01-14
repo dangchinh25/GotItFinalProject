@@ -17,7 +17,9 @@ class InvalidRequestError(BaseError):
 
 
 class UnauthorizedError(BaseError):
-    status_code = 401
+    def __init__(self):
+        self.status_code = 401
+        self.message = "Invalid credentials"
 
 
 class ForbiddenError(BaseError):
