@@ -7,7 +7,7 @@ from main.models.item import ItemModel
 
 from main.schemas.category import CategorySchema
 from main.schemas.item import ItemSchema
-from main.helpers import validate_input, check_category_exist, validate_token
+from main.helpers import validate_input, check_category_exist, validate_token, validate_pagination
 from main.exceptions import InternalServerError, NotFoundError
 
 
@@ -31,12 +31,14 @@ def get_category(category):
 
 @app.route("/categories/<int:category_id>/items", methods=["GET"])
 @check_category_exist
-def get_category_items(category):
+@validate_pagination
+def get_category_items(category, pagination):
     # get all items of a particular category
     try:
-        items = ItemSchema(many=True).dump(category.items.all())
+        items = ItemSchema(many=True).dump(category.items.limit(pagination["limit"]).offset(pagination["offset"]))
         total = category.items.count()
     except Exception as e:
+        print(e)
         raise InternalServerError()
 
     return jsonify({"items": items, "total": total}), 200

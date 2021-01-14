@@ -7,6 +7,7 @@ from marshmallow import ValidationError
 from main.exceptions import InvalidRequestError, InternalServerError, NotFoundError
 from main.models.category import CategoryModel
 from main.models.item import ItemModel
+from main.schemas.pagination import PaginationSchema
 
 from main.app import app
 
@@ -60,13 +61,26 @@ def validate_token(func):
             data = jwt.decode(access_token, app.config["SECRET"], algorithms="HS256")
             user_id = data["user_id"]
         except Exception as e:
-            print(e)
             raise InvalidRequestError()
 
         return func(user_id=user_id, *args, **kwargs)
 
     return wrapper
 
+
+def validate_pagination(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            offset = request.args["offset"]
+            limit = request.args["limit"]
+            pagination = PaginationSchema().load({"offset": offset, "limit": limit})
+        except Exception as e:
+            print(e)
+            raise InvalidRequestError()
+
+        return func(pagination=pagination, *args, **kwargs)
+    return wrapper
 
 
 def generate_token(user_id):
