@@ -6,7 +6,7 @@ from main.db import db
 from main.models.user import UserModel
 from main.schemas.user import UserSchema
 from main.helpers import validate_input
-from main.exceptions import InvalidRequestError, InternalServerError, UnauthorizedError
+from main.exceptions import BadRequestError, InternalServerError, UnauthorizedError
 from main.helpers import generate_token, validate_token
 
 
@@ -18,7 +18,7 @@ def signin(data):
     except Exception as e:
         raise InternalServerError()
     if not existing_user or not bcrypt.checkpw(data["password"].encode("utf-8"), existing_user.password.encode("utf-8")):
-        raise UnauthorizedError()
+        raise UnauthorizedError("Invalid credentials.")
 
     return jsonify({"access_token": generate_token(existing_user.id)}), 200
 
@@ -32,7 +32,7 @@ def signup(data):
         raise InternalServerError()
 
     if existing_user:
-        raise InvalidRequestError()
+        raise BadRequestError("Username already existed.")
 
     data["password"] = bcrypt.hashpw(data["password"].encode("utf-8"), bcrypt.gensalt())
     user = UserModel(**data)
@@ -48,4 +48,4 @@ def signup(data):
 @app.route("/users/me", methods=["GET"])
 @validate_token
 def get_current_user(user_id):
-    return jsonify({"id": user_id})
+    return jsonify({"id": user_id}), 200

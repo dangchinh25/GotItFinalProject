@@ -11,7 +11,7 @@ from main.exceptions import ForbiddenError, InternalServerError
 @app.route("/items/<int:item_id>", methods=["GET"])
 @check_item_exist
 def get_item(item):
-    return jsonify(ItemSchema().dump(item))
+    return jsonify(ItemSchema().dump(item)), 200
 
 
 @app.route("/items/<int:item_id>", methods=["PUT"])
@@ -19,8 +19,8 @@ def get_item(item):
 @validate_input(ItemSchema)
 @check_item_exist
 def update_item(user_id, data, item):
-    if item.id != user_id:
-        raise ForbiddenError()
+    if item.user_id != user_id:
+        raise ForbiddenError("You are not allowed to edit this item.")
 
     try:
         item.name = data["name"]
@@ -32,7 +32,7 @@ def update_item(user_id, data, item):
     except Exception as e:
         raise InternalServerError()
 
-    return jsonify(ItemSchema().dump(item))
+    return jsonify(ItemSchema().dump(item)), 201
 
 
 @app.route("/items/<int:item_id>", methods=["DELETE"])
@@ -40,7 +40,7 @@ def update_item(user_id, data, item):
 @check_item_exist
 def delete_item(user_id, item):
     if user_id != item.id:
-        raise ForbiddenError()
+        raise ForbiddenError("You are not allowed to edit this item.")
 
     try:
         db.session.delete(item)

@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from flask import request
 from marshmallow import ValidationError
 
-from main.exceptions import InvalidRequestError, InternalServerError, NotFoundError
+from main.exceptions import BadRequestError, InternalServerError, NotFoundError
 from main.models.category import CategoryModel
 from main.models.item import ItemModel
 from main.schemas.pagination import PaginationSchema
@@ -20,7 +20,7 @@ def validate_input(schema):
             try:
                 data = schema().load(request.get_json())
             except ValidationError as e:
-                raise InvalidRequestError("Invalid request data.", e.normalized_messages())
+                raise BadRequestError("Invalid request data.", e.normalized_messages())
 
             return func(data=data, *args, **kwargs)
         return validate
@@ -31,11 +31,12 @@ def check_category_exist(func):
     @functools.wraps(func)
     def check(*args, **kwargs):
         try:
-            category = CategoryModel.query.get(kwargs.pop("category_id"))
+            category_id = kwargs.pop("category_id")
+            category = CategoryModel.query.get(category_id)
         except Exception as e:
             raise InternalServerError()
         if not category:
-            raise NotFoundError()
+            raise NotFoundError("Category with id {category_id} does not exist.".format(category_id=category_id))
         return func(category=category, *args, **kwargs)
     return check
 
@@ -44,11 +45,12 @@ def check_item_exist(func):
     @functools.wraps(func)
     def check(*args, **kwargs):
         try:
-            item = ItemModel.query.get(kwargs.pop("item_id"))
+            item_id = kwargs.pop("item_id")
+            item = ItemModel.query.get(item_id)
         except Exception as e:
             raise InternalServerError()
         if not item:
-            raise NotFoundError()
+            raise NotFoundError("Item with id {item_id} does not exist.".format(item_id=item_id))
         return func(item=item, *args, **kwargs)
     return check
 
@@ -61,7 +63,7 @@ def validate_token(func):
             data = jwt.decode(access_token, app.config["SECRET"], algorithms="HS256")
             user_id = data["user_id"]
         except Exception as e:
-            pass
+            raise BadRequestError("Access token required. Please sign in again.")
 
         return func(user_id=user_id, *args, **kwargs)
 
@@ -75,9 +77,10 @@ def validate_pagination(func):
             offset = request.args["offset"]
             limit = request.args["limit"]
             pagination = PaginationSchema().load({"offset": offset, "limit": limit})
+        except ValidationError as e:
+            raise BadRequestError("Invalid request data", e.normalized_messages())
         except Exception as e:
-            print(e)
-            raise InvalidRequestError()
+            raise BadRequestError("Invalid request data")
 
         return func(pagination=pagination, *args, **kwargs)
     return wrapper

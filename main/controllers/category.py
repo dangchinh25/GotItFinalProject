@@ -8,7 +8,7 @@ from main.models.item import ItemModel
 from main.schemas.category import CategorySchema
 from main.schemas.item import ItemSchema
 from main.helpers import validate_input, check_category_exist, validate_token, validate_pagination
-from main.exceptions import InternalServerError, NotFoundError
+from main.exceptions import InternalServerError, NotFoundError, BadRequestError
 
 
 @app.route("/categories", methods=["GET"])
@@ -19,14 +19,14 @@ def get_categories():
     except Exception as e:
         raise InternalServerError()
     
-    return jsonify(CategorySchema(many=True).dump(categories))
+    return jsonify(CategorySchema(many=True).dump(categories)), 200
 
 
 @app.route("/categories/<int:category_id>", methods=["GET"])
 @check_category_exist
 def get_category(category):
     # get info of 1 category
-    return jsonify(CategorySchema().dump(category))
+    return jsonify(CategorySchema().dump(category)), 200
 
 
 @app.route("/categories/<int:category_id>/items", methods=["GET"])
@@ -38,7 +38,6 @@ def get_category_items(category, pagination):
         items = ItemSchema(many=True).dump(category.items.limit(pagination["limit"]).offset(pagination["offset"]))
         total = category.items.count()
     except Exception as e:
-        print(e)
         raise InternalServerError()
 
     return jsonify({"items": items, "total": total}), 200
@@ -49,6 +48,14 @@ def get_category_items(category, pagination):
 @check_category_exist
 @validate_input(ItemSchema)
 def create_item(user_id, category, data):
+    item_name = data["name"]
+    try:
+        existing_item = ItemModel.query.filter_by(name=item_name).one_or_none()
+    except Exception as e:
+        raise InternalServerError()
+    if existing_item:
+        raise BadRequestError("Item {name} already existed.".format(name=item_name))
+
     new_item = ItemModel(user_id=user_id, category_id=category.id, **data)
     try:
         db.session.add(new_item)
@@ -62,9 +69,16 @@ def create_item(user_id, category, data):
 @app.route("/categories", methods=["POST"])
 @validate_token
 @validate_input(CategorySchema)
-def create_category(data):
+def create_category(user_id, data):
+    category_name = data["name"]
+    try:
+        existing_category = CategoryModel.query.filter_by(name=category_name).one_or_none()
+    except Exception as e:
+        raise InternalServerError()
+    if existing_category:
+        raise BadRequestError("Category {name} already existed.".format(name=category_name))
     # create new category
-    new_category = CategoryModel(name=data["name"])
+    new_category = CategoryModel(category_name)
     try:
         db.session.add(new_category)
         db.session.commit()

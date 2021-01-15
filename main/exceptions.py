@@ -6,35 +6,30 @@ class BaseError(Exception):
     message = None
     error_data = {}
 
-    def __init__(self, message, error):
+    def __init__(self, message, error={}):
         super().__init__()
         self.message = message
         self.error_data = error
 
 
-class InvalidRequestError(BaseError):
+class BadRequestError(BaseError):
     status_code = 400
 
 
 class UnauthorizedError(BaseError):
-    def __init__(self):
-        self.status_code = 401
-        self.message = "Invalid credentials"
+    status_code = 401
 
 
 class ForbiddenError(BaseError):
-    def __init__(self):
-        self.status_code = 403
-        self.message = "Unauthorized user."
+    status_code = 403
 
 
 class NotFoundError(BaseError):
-    def __init__(self):
-        self.status_code = 404
-        self.message = "Not found error."
+    status_code = 404
 
 
 class InternalServerError(BaseError):
+    status_code = 500
+
     def __init__(self):
-        self.status_code = 500
-        self.message = "Internal server error."
+        self.message = "Internal server error"
