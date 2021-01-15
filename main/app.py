@@ -1,5 +1,4 @@
 from flask import Flask, jsonify
-from werkzeug.exceptions import HTTPException
 
 from main.db import db
 from main.config import config
