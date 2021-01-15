@@ -20,7 +20,7 @@ def validate_input(schema):
             try:
                 data = schema().load(request.get_json())
             except ValidationError as e:
-                raise e
+                raise InvalidRequestError("Invalid request data.", e.normalized_messages())
 
             return func(data=data, *args, **kwargs)
         return validate
@@ -61,7 +61,7 @@ def validate_token(func):
             data = jwt.decode(access_token, app.config["SECRET"], algorithms="HS256")
             user_id = data["user_id"]
         except Exception as e:
-            raise InvalidRequestError()
+            pass
 
         return func(user_id=user_id, *args, **kwargs)
 

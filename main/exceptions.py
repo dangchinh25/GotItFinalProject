@@ -2,18 +2,18 @@ from flask import jsonify
 
 
 class BaseError(Exception):
-    def __init__(self):
-        self.message = None
-        self.status_code = None
+    status_code = None
+    message = None
+    error_data = {}
 
-    def messages(self):
-        return jsonify({'message': self.message}), self.status_code
+    def __init__(self, message, error):
+        super().__init__()
+        self.message = message
+        self.error_data = error
 
 
 class InvalidRequestError(BaseError):
-    def __init__(self):
-        self.status_code = 400
-        self.message = "Invalid request data."
+    status_code = 400
 
 
 class UnauthorizedError(BaseError):
