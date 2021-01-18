@@ -3,6 +3,7 @@ import jwt
 from datetime import datetime, timedelta
 from flask import request
 from marshmallow import ValidationError
+import bcrypt
 
 from main.exceptions import BadRequestError, InternalServerError, NotFoundError
 from main.models.category import CategoryModel
@@ -88,4 +89,12 @@ def validate_pagination(func):
 
 def generate_token(user_id):
     return jwt.encode({"user_id": user_id, "exp": datetime.utcnow() + timedelta(minutes=30)}, app.config["SECRET"], algorithm="HS256")
+
+
+def generate_hashed_password(password):
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+
+
+def validate_hashed_password(password, hashed_password):
+    return bcrypt.checkpw(password.encode("utf-8"), hashed_password.encode("utf-8"))
 

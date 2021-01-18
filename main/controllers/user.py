@@ -7,7 +7,7 @@ from main.models.user import UserModel
 from main.schemas.user import UserSchema
 from main.helpers import validate_input
 from main.exceptions import BadRequestError, InternalServerError, UnauthorizedError
-from main.helpers import generate_token, validate_token
+from main.helpers import generate_token, validate_token, generate_hashed_password, validate_hashed_password
 
 
 @app.route("/users/signin", methods=["POST"])
@@ -17,7 +17,7 @@ def signin(data):
         existing_user = UserModel.query.filter_by(username=data["username"]).one_or_none()
     except Exception as e:
         raise InternalServerError()
-    if not existing_user or not bcrypt.checkpw(data["password"].encode("utf-8"), existing_user.password.encode("utf-8")):
+    if not existing_user or not validate_hashed_password(data["password"], existing_user.password):
         raise UnauthorizedError("Invalid credentials.")
 
     return jsonify({"access_token": generate_token(existing_user.id)}), 200
@@ -34,7 +34,7 @@ def signup(data):
     if existing_user:
         raise BadRequestError("Username already existed.")
 
-    data["password"] = bcrypt.hashpw(data["password"].encode("utf-8"), bcrypt.gensalt())
+    data["password"] = generate_hashed_password(data["password"])
     user = UserModel(**data)
     try:
         db.session.add(user)
