@@ -18,7 +18,7 @@ def signin(data):
     except Exception as e:
         raise InternalServerError()
     if not existing_user or not validate_hashed_password(data["password"], existing_user.password):
-        raise UnauthorizedError("Invalid credentials.")
+        raise BadRequestError("Invalid credentials.")
 
     return jsonify({"access_token": generate_token(existing_user.id)}), 200
 
