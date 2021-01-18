@@ -5,7 +5,7 @@ from main.db import db
 from main.models.item import ItemModel
 from main.schemas.item import ItemSchema
 from main.helpers import validate_input, validate_token, check_item_exist
-from main.exceptions import ForbiddenError, InternalServerError
+from main.exceptions import ForbiddenError, InternalServerError, BadRequestError
 
 
 @app.route("/items/<int:item_id>", methods=["GET"])
@@ -30,7 +30,7 @@ def update_item(user_id, data, item):
         db.session.add(item)
         db.session.commit()
     except Exception as e:
-        raise InternalServerError()
+        raise BadRequestError("Invalid request data.")
 
     return jsonify(ItemSchema().dump(item)), 201
 

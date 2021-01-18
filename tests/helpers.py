@@ -31,3 +31,13 @@ def create_category(client, credentials, category_name):
     json_response = response.get_json()
 
     return response, json_response
+
+
+def put_item(client, credentials, item_id, data):
+    _, signin_response = signin(client, credentials)
+    access_token = signin_response["access_token"]
+
+    response = client.put("/items/{}".format(item_id), headers=create_headers(access_token), data=json.dumps(data))
+    json_response = response.get_json()
+
+    return response, json_response

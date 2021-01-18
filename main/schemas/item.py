@@ -8,4 +8,4 @@ class ItemSchema(Schema):
     description = fields.Str(required=True, error="You must provide description.")
     category_id = fields.Int()
     user_id = fields.Int()
-    created = fields.DateTime(dump_only=True)
+    created = fields.DateTime()
