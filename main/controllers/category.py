@@ -78,7 +78,7 @@ def create_category(user_id, data):
     if existing_category:
         raise BadRequestError("Category {name} already existed.".format(name=category_name))
     # create new category
-    new_category = CategoryModel(category_name)
+    new_category = CategoryModel(name=category_name)
     try:
         db.session.add(new_category)
         db.session.commit()

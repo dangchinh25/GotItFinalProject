@@ -32,6 +32,8 @@ def generate_items():
     items = [
         ItemModel(user_id=1, category_id=1, name="lamp", description="This is a lamp, it emit light"),
         ItemModel(user_id=1, category_id=3, name="macbookpro", description="Expensive shit"),
+        ItemModel(user_id=1, category_id=3, name="dellxps15", description="Less Expensive shit"),
+        ItemModel(user_id=1, category_id=3, name="dellmonitor", description="Good stuff"),
     ]
 
     db.session.add_all(items)

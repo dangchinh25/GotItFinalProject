@@ -79,9 +79,9 @@ def validate_pagination(func):
             limit = request.args["limit"]
             pagination = PaginationSchema().load({"offset": offset, "limit": limit})
         except ValidationError as e:
-            raise BadRequestError("Invalid request data", e.normalized_messages())
+            raise BadRequestError("Invalid request data.", e.normalized_messages())
         except Exception as e:
-            raise BadRequestError("Invalid request data")
+            raise BadRequestError("Invalid request data.")
 
         return func(pagination=pagination, *args, **kwargs)
     return wrapper
