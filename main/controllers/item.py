@@ -30,7 +30,7 @@ def update_item(user_id, data, item):
         db.session.add(item)
         db.session.commit()
     except Exception as e:
-        raise BadRequestError("Invalid request data.")
+        raise InternalServerError()
 
     return jsonify(ItemSchema().dump(item)), 201
 

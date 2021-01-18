@@ -31,12 +31,11 @@ def test_create_category_with_invalid_request_data(client, credentials, category
     assert json_response["error"] != {}
 
 
-@pytest.mark.parametrize("category_name, status_code", [("toilet", 400)])
-def test_create_category_with_invalid_token(client, category_name, status_code):
+def test_create_category_with_invalid_token(client):
     response = client.post("/categories", headers=create_headers(),
-                           data=json.dumps({"name": category_name}))
+                           data=json.dumps({"name": "toilet"}))
     json_response = response.get_json()
 
-    assert response.status_code == status_code, "Invalid credential call should return 400 status code"
+    assert response.status_code == 400, "Invalid credential call should return 400 status code"
     assert json_response["message"] == "Access token required. Please sign in again."
     assert json_response["error"] == {}

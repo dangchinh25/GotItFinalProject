@@ -56,7 +56,7 @@ def create_item(user_id, category, data):
     if existing_item:
         raise BadRequestError("Item {name} already existed.".format(name=item_name))
 
-    new_item = ItemModel(user_id=user_id, category_id=category.id, **data)
+    new_item = ItemModel(user_id=user_id, **data)
     try:
         db.session.add(new_item)
         db.session.commit()
