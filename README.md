@@ -50,4 +50,4 @@ Type the following command to in your terminal:
 7. Testing
 
 To test the app, type the following command in your terminal:
-`ENV=test python -m pytest`
+`ENV=test python -m coverage run -m pytest`
