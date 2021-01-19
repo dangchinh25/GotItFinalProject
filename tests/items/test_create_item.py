@@ -44,7 +44,7 @@ def test_create_item_invalid_token(client):
     response = client.post("/categories/1/items", headers=create_headers(), data=json.dumps({"name": "lamp", "description": "A table", "category_id": 1}))
     json_response = response.get_json()
 
-    assert response.status_code == 400
+    assert response.status_code == 401, "Invalid credentials call should return 400 status code"
     assert json_response["message"] == "Access token required. Please sign in again."
     assert json_response["error"] == {}
 

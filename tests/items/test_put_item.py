@@ -38,7 +38,7 @@ def test_put_item_invalid_token(client):
                           data=json.dumps({"name": "lamp2", "description": "Slightly better lamp", "category_id": 1}))
     json_response = response.get_json()
 
-    assert response.status_code == 400, "Invalid credential call should return 400 status code"
+    assert response.status_code == 401, "Invalid credential call should return 401 status code"
     assert json_response["message"] == "Access token required. Please sign in again."
     assert json_response["error"] == {}
 
