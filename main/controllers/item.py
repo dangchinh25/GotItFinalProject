@@ -39,7 +39,7 @@ def update_item(user_id, data, item):
 @validate_token
 @check_item_exist
 def delete_item(user_id, item):
-    if user_id != item.id:
+    if user_id != item.user_id:
         raise ForbiddenError("You are not allowed to edit this item.")
 
     try:

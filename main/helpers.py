@@ -5,7 +5,7 @@ from flask import request
 from marshmallow import ValidationError
 import bcrypt
 
-from main.exceptions import BadRequestError, InternalServerError, NotFoundError
+from main.exceptions import BadRequestError, InternalServerError, NotFoundError, UnauthorizedError
 from main.models.category import CategoryModel
 from main.models.item import ItemModel
 from main.schemas.pagination import PaginationSchema
@@ -64,7 +64,7 @@ def validate_token(func):
             data = jwt.decode(access_token, app.config["SECRET"], algorithms="HS256")
             user_id = data["user_id"]
         except Exception as e:
-            raise BadRequestError("Access token required. Please sign in again.")
+            raise UnauthorizedError("Access token required. Please sign in again.")
 
         return func(user_id=user_id, *args, **kwargs)
 
@@ -75,13 +75,20 @@ def validate_pagination(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         try:
-            offset = request.args["offset"]
-            limit = request.args["limit"]
-            pagination = PaginationSchema().load({"offset": offset, "limit": limit})
+            offset = request.args.get("offset")
+            limit = request.args.get("limit")
+        except Exception as e:
+            pass
+        if not request.args.get("offset"):
+            offset = 0
+        if not request.args.get("limit"):
+            limit = 10
+        try:
+            PaginationSchema().load({"limit": limit, "offset": offset})
         except ValidationError as e:
             raise BadRequestError("Invalid request data.", e.normalized_messages())
-        except Exception as e:
-            raise BadRequestError("Invalid request data.")
+
+        pagination = PaginationSchema().dump({"limit": limit, "offset": offset})
 
         return func(pagination=pagination, *args, **kwargs)
     return wrapper
