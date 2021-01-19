@@ -52,7 +52,7 @@ Type the following command to in your terminal:
 To test the app, type the following command in your terminal, a detail 
 will be generated under htmlcov/index.html:
 
-`ENV=test coverage run --source main/ -m pytest`
+`ENV=test coverage run -m pytest`
 
 `coverage html`
 

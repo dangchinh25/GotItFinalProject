@@ -3,6 +3,5 @@ __pycache__/
 .pytest_cache/
 .idea
 .coverage
-.coveragerc
 .DS_Store
 htmlcov/
