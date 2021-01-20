@@ -17,7 +17,7 @@ def test_create_item_success(client, credentials, category_id, data):
 @pytest.mark.parametrize("credentials, category_id, data", [
     ({"username": "hizen2501", "password": "0123456"}, 1, {"name": "lamp", "description": "A table", "category_id": 1})])
 def test_create_item_existed_item(client, credentials, category_id, data):
-    response, json_response = create_item(client, credentials,category_id, data)
+    response, json_response = create_item(client, credentials, category_id, data)
 
     assert response.status_code == 400, "Invalid request call should return 400 status code"
     assert json_response["message"] == "Item lamp already existed."

@@ -4,7 +4,7 @@ import json
 def create_headers(access_token=None):
     headers = {'Content-Type': 'application/json'}
     if access_token:
-        headers["Authorization"] = "Bearer {}".format(access_token)
+        headers["Authorization"] = f"Bearer {access_token}"
 
     return headers
 
@@ -37,7 +37,7 @@ def put_item(client, credentials, item_id, data):
     _, signin_response = signin(client, credentials)
     access_token = signin_response["access_token"]
 
-    response = client.put("/items/{}".format(item_id), headers=create_headers(access_token), data=json.dumps(data))
+    response = client.put(f"/items/{item_id}", headers=create_headers(access_token), data=json.dumps(data))
     json_response = response.get_json()
 
     return response, json_response
@@ -47,7 +47,7 @@ def delete_item(client, credentials, item_id):
     _, signin_response = signin(client, credentials)
     access_token = signin_response["access_token"]
 
-    response = client.delete("/items/{}".format(item_id), headers=create_headers(access_token))
+    response = client.delete(f"/items/{item_id}", headers=create_headers(access_token))
 
     return response
 
@@ -56,7 +56,7 @@ def create_item(client, credentials, category_id,data):
     _, signin_response = signin(client, credentials)
     access_token = signin_response["access_token"]
 
-    response = client.post("/categories/{}/items".format(category_id), headers=create_headers(access_token), data=json.dumps(data))
+    response = client.post(f"/categories/{category_id}/items", headers=create_headers(access_token), data=json.dumps(data))
     json_response = response.get_json()
 
     return response, json_response

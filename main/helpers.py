@@ -9,7 +9,6 @@ from main.exceptions import BadRequestError, InternalServerError, NotFoundError,
 from main.models.category import CategoryModel
 from main.models.item import ItemModel
 from main.schemas.pagination import PaginationSchema
-
 from main.app import app
 
 
@@ -37,7 +36,7 @@ def check_category_exist(func):
         except Exception as e:
             raise InternalServerError()
         if not category:
-            raise NotFoundError("Category with id {category_id} does not exist.".format(category_id=category_id))
+            raise NotFoundError(f"Category with id {category_id} does not exist.")
         return func(category=category, *args, **kwargs)
     return check
 
@@ -51,7 +50,7 @@ def check_item_exist(func):
         except Exception as e:
             raise InternalServerError()
         if not item:
-            raise NotFoundError("Item with id {item_id} does not exist.".format(item_id=item_id))
+            raise NotFoundError(f"Item with id {item_id} does not exist.")
         return func(item=item, *args, **kwargs)
     return check
 

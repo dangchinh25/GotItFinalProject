@@ -13,7 +13,6 @@ from main.exceptions import InternalServerError, NotFoundError, BadRequestError
 
 @app.route("/categories", methods=["GET"])
 def get_categories():
-    # get all categories
     try:
         categories = CategoryModel.query.all()
     except Exception as e:
@@ -54,7 +53,7 @@ def create_item(user_id, category, data):
     except Exception as e:
         raise InternalServerError()
     if existing_item:
-        raise BadRequestError("Item {name} already existed.".format(name=item_name))
+        raise BadRequestError(f"Item {item_name} already existed.")
 
     new_item = ItemModel(user_id=user_id, **data)
     try:
@@ -76,7 +75,7 @@ def create_category(user_id, data):
     except Exception as e:
         raise InternalServerError()
     if existing_category:
-        raise BadRequestError("Category {name} already existed.".format(name=category_name))
+        raise BadRequestError(f"Category {category_name} already existed.")
     # create new category
     new_category = CategoryModel(name=category_name)
     try:
