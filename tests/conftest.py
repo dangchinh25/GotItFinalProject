@@ -9,7 +9,7 @@ from tests.setup_db import drop_table, generate_categories, generate_users, gene
 
 
 @pytest.fixture
-def setup():
+def client():
     try:
         drop_table()
     except:
@@ -19,11 +19,6 @@ def setup():
         generate_categories()
         generate_users()
         generate_items()
-    return app
-
-
-@pytest.fixture
-def client(setup):
-    return setup.test_client()
+    return app.test_client()
 
 
