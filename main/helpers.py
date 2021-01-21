@@ -73,21 +73,18 @@ def validate_token(func):
 def validate_pagination(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        try:
-            offset = request.args.get("offset")
+        limit = 10
+        offset = 0
+
+        if request.args.get("limit"):
             limit = request.args.get("limit")
-        except Exception as e:
-            pass
-        if not request.args.get("offset"):
-            offset = 0
-        if not request.args.get("limit"):
-            limit = 10
+        if request.args.get("offset"):
+            offset = request.args.get("offset")
+
         try:
-            PaginationSchema().load({"limit": limit, "offset": offset})
+            pagination = PaginationSchema().load({"limit": limit, "offset": offset})
         except ValidationError as e:
             raise BadRequestError("Invalid request data.", e.normalized_messages())
-
-        pagination = PaginationSchema().dump({"limit": limit, "offset": offset})
 
         return func(pagination=pagination, *args, **kwargs)
     return wrapper
