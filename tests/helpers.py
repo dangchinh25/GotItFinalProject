@@ -2,7 +2,7 @@ import json
 
 
 def create_headers(access_token=None):
-    headers = {'Content-Type': 'application/json'}
+    headers = {"Content-Type': 'application/json"}
     if access_token:
         headers["Authorization"] = f"Bearer {access_token}"
 

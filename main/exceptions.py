@@ -1,6 +1,3 @@
-from flask import jsonify
-
-
 class BaseError(Exception):
     status_code = None
     message = None
@@ -33,3 +30,5 @@ class InternalServerError(BaseError):
 
     def __init__(self):
         self.message = "Internal server error"
+
+

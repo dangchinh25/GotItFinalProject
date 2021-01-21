@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from flask import request
 from marshmallow import ValidationError
 import bcrypt
+from sqlalchemy.exc import SQLAlchemyError
 
 from main.exceptions import BadRequestError, InternalServerError, NotFoundError, UnauthorizedError
 from main.models.category import CategoryModel
@@ -30,10 +31,10 @@ def validate_input(schema):
 def check_category_exist(func):
     @functools.wraps(func)
     def check(*args, **kwargs):
+        category_id = kwargs.pop("category_id")
         try:
-            category_id = kwargs.pop("category_id")
             category = CategoryModel.query.get(category_id)
-        except Exception as e:
+        except SQLAlchemyError:
             raise InternalServerError()
         if not category:
             raise NotFoundError(f"Category with id {category_id} does not exist.")
@@ -44,10 +45,10 @@ def check_category_exist(func):
 def check_item_exist(func):
     @functools.wraps(func)
     def check(*args, **kwargs):
+        item_id = kwargs.pop("item_id")
         try:
-            item_id = kwargs.pop("item_id")
             item = ItemModel.query.get(item_id)
-        except Exception as e:
+        except SQLAlchemyError:
             raise InternalServerError()
         if not item:
             raise NotFoundError(f"Item with id {item_id} does not exist.")
@@ -62,8 +63,10 @@ def validate_token(func):
             access_token = request.headers["Authorization"].split()[1]
             data = jwt.decode(access_token, app.config["SECRET"], algorithms="HS256")
             user_id = data["user_id"]
-        except Exception as e:
-            raise UnauthorizedError("Access token required. Please sign in again.")
+        except KeyError:
+            raise BadRequestError("Missing token. Please sign in first to perform this action.")
+        except jwt.InvalidTokenError:
+            raise UnauthorizedError("Invalid token. Please sign in again.")
 
         return func(user_id=user_id, *args, **kwargs)
 

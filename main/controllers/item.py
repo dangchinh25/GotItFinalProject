@@ -1,11 +1,11 @@
 from flask import request, jsonify
+from sqlalchemy.exc import SQLAlchemyError
 
 from main.app import app
 from main.db import db
-from main.models.item import ItemModel
 from main.schemas.item import ItemSchema
 from main.helpers import validate_input, validate_token, check_item_exist
-from main.exceptions import ForbiddenError, InternalServerError, BadRequestError
+from main.exceptions import ForbiddenError, InternalServerError
 
 
 @app.route("/items/<int:item_id>", methods=["GET"])
@@ -29,7 +29,7 @@ def update_item(user_id, data, item):
 
         db.session.add(item)
         db.session.commit()
-    except Exception as e:
+    except SQLAlchemyError:
         raise InternalServerError()
 
     return jsonify(ItemSchema().dump(item)), 201
@@ -45,7 +45,7 @@ def delete_item(user_id, item):
     try:
         db.session.delete(item)
         db.session.commit()
-    except Exception as e:
+    except SQLAlchemyError:
         raise InternalServerError()
 
     return jsonify({}), 200
