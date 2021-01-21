@@ -19,3 +19,10 @@ def client():
     return app.test_client()
 
 
+@pytest.fixture
+def access_token(client):
+    response = client.post("/users/signin", json={"username": "hizen2501", "password": "0123456"})
+    json_response = response.get_json()
+
+    return json_response["access_token"]
+

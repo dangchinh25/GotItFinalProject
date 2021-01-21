@@ -3,7 +3,7 @@ from main.schemas.item import ItemSchema
 
 
 def create_url_with_paramenters(category_id, limit, offset):
-    return "/categories/{}/items?limit={}&offset={}".format(category_id, limit, offset)
+    return f"/categories/{category_id}/items?limit={limit}&offset={offset}"
 
 
 def get_category_items_success(client):
@@ -15,7 +15,7 @@ def get_category_items_success(client):
     assert ItemSchema(many=True).load(json_response), "All of object's data should be uniform"
 
 
-def test_get_category_items_nonexistend_category_id(client):
+def test_get_category_items_nonexisted_category_id(client):
     url = create_url_with_paramenters(category_id=100, limit=10, offset=0)
     response = client.get(url)
     json_response = response.get_json()
@@ -24,8 +24,9 @@ def test_get_category_items_nonexistend_category_id(client):
     assert json_response["error"] == {}
 
 
-@pytest.mark.parametrize("url", ["/categories/3/items?limit=a&offset=1", "/categories/3/items?limit=1&offset=a", "/categories/3/items?limit=a&offset=a"])
-def test_get_category_items_invalid_request_data(client, url):
+@pytest.mark.parametrize("category_id, limit, offset", [(3, "a", 1), (3, 1, "a"), (3, "a", "a")])
+def test_get_category_items_invalid_request_data(client, category_id, limit, offset):
+    url = create_url_with_paramenters(category_id, limit, offset)
     response = client.get(url)
     json_response = response.get_json()
     assert response.status_code == 400, "Invalid request call should return 400 status code"

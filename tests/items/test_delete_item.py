@@ -1,27 +1,32 @@
 import pytest
 
-from tests.helpers import delete_item, create_headers
+from tests.helpers import create_headers, signin
 
 
-def test_delete_item_success(client):
-    credentials = {"username": "hizen", "password": "123456"}
-    response = delete_item(client, credentials, item_id=1)
+def delete_item(client, access_token, item_id):
+    response = client.delete(f"/items/{item_id}", headers=create_headers(access_token))
+
+    return response
+
+
+def test_delete_item_success(client, access_token):
+    response = delete_item(client, access_token, item_id=5)
 
     assert response.status_code == 200
 
 
 def test_delete_item_invalid_token(client):
-    response = client.delete("/items/1", headers=create_headers())
+    response = client.delete("/items/1")
     json_response = response.get_json()
 
-    assert response.status_code == 401, "Invalid credential call should return 401 status code"
-    assert json_response["message"] == "Access token required. Please sign in again."
+    assert response.status_code == 400, "Missing credential call should return 400 status code"
+    assert json_response["message"] == "Missing token. Please sign in first to perform this action."
     assert json_response["error"] == {}
 
 
 def test_delete_item_invalid_user(client):
-    credentials = {"username": "hizen2501", "password": "0123456"}
-    response = delete_item(client, credentials, item_id=1)
+    _, json_response = signin(client, {"username": "hizen2501", "password": "0123456"})
+    response = delete_item(client, json_response["access_token"], item_id=1)
     json_response = response.get_json()
 
     assert response.status_code == 403, "Forbidden credential call should return 403 status code"
@@ -29,9 +34,8 @@ def test_delete_item_invalid_user(client):
     assert json_response["error"] == {}
 
 
-def test_delete_item_not_exist(client):
-    credentials = {"username": "hizen", "password": "123456"}
-    response = delete_item(client, credentials, item_id=100)
+def test_delete_item_not_exist(client, access_token):
+    response = delete_item(client, access_token, item_id=100)
     json_response = response.get_json()
 
     assert response.status_code == 404, "Not found error should return 404 status code"
