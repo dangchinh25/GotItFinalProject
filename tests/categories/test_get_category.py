@@ -1,8 +1,9 @@
 from main.schemas.category import CategorySchema
 
 
-def test_get_category_success(client):
-    response = client.get("/categories/1")
+def test_get_category_success(client, categories_test):
+    category_id = categories_test[0]["id"]
+    response = client.get(f"/categories/{category_id}")
     json_response = response.get_json()
     assert response.status_code == 200, "Successful call should return 200 status code"
     assert CategorySchema().load(json_response), "All of object's data should be uniform"

@@ -1,8 +1,9 @@
 from main.schemas.item import ItemSchema
 
 
-def test_get_item_success(client):
-    response = client.get("/items/1")
+def test_get_item_success(client, items_test):
+    item_id = items_test[0]["id"]
+    response = client.get(f"/items/{item_id}")
     json_response = response.get_json()
     assert response.status_code == 200, "Successful call should return 200 status code"
     assert ItemSchema().load(json_response), "All of object's data should be uniform"

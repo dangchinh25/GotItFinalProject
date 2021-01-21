@@ -4,6 +4,9 @@ from main.schemas.category import CategorySchema
 from tests.helpers import create_headers
 
 
+new_category_name = "silverware"
+
+
 def create_category(client, access_token, category_name):
     response = client.post("/categories", headers=create_headers(access_token), json={"name": category_name})
     json_response = response.get_json()
@@ -11,16 +14,15 @@ def create_category(client, access_token, category_name):
     return response, json_response
 
 
-@pytest.mark.parametrize("category_name, status_code", [("silverware", 201)])
-def test_create_category_success(client, access_token, category_name, status_code):
-    response, json_response = create_category(client, access_token, category_name)
+def test_create_category_success(client, access_token, categories_test):
+    response, json_response = create_category(client, access_token, new_category_name)
 
-    assert response.status_code == status_code, "Successful call should return 201 status code"
+    assert response.status_code == 201, "Successful call should return 201 status code"
     assert CategorySchema().load(json_response), "All of object's data should be uniform"
 
 
-def test_create_category_existed_name(client, access_token):
-    existed_name = "household"
+def test_create_category_existed_name(client, access_token, categories_test):
+    existed_name = categories_test[0]["name"]
     response, json_response = create_category(client, access_token, existed_name)
 
     assert response.status_code == 400, "Invalid request call should return 400 status code"
@@ -28,17 +30,17 @@ def test_create_category_existed_name(client, access_token):
     assert json_response["error"] == {}
 
 
-@pytest.mark.parametrize("category_name, status_code", [("", 400)])
-def test_create_category_invalid_request_data(client, access_token, category_name, status_code):
-    response, json_response = create_category(client, access_token, category_name)
+def test_create_category_invalid_request_data(client, access_token, categories_test):
 
-    assert response.status_code == status_code, "Invalid request call should return 400 status code"
+    response, json_response = create_category(client, access_token, "")
+
+    assert response.status_code == 400, "Invalid request call should return 400 status code"
     assert json_response["message"] == "Invalid request data."
     assert json_response["error"] != {}
 
 
-def test_create_category_missing_token(client):
-    response = client.post("/categories", json={"name": "toilet"})
+def test_create_category_missing_token(client, categories_test):
+    response = client.post("/categories", json={"name": new_category_name})
     json_response = response.get_json()
 
     assert response.status_code == 400, "Missing credential call should return 400 status code"

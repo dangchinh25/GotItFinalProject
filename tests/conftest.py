@@ -1,5 +1,4 @@
 import pytest
-import os
 
 from main.controllers.category import get_category, get_categories, get_category_items, create_item, create_category
 from main.controllers.item import get_item, update_item, delete_item
@@ -13,15 +12,33 @@ def client():
     with app.app_context():
         db.drop_all()
         db.create_all(app=app)
-        generate_categories()
-        generate_users()
-        generate_items()
     return app.test_client()
 
 
 @pytest.fixture
-def access_token(client):
-    response = client.post("/users/signin", json={"username": "hizen2501", "password": "0123456"})
+def categories_test():
+    with app.app_context():
+        categories = generate_categories()
+    return categories
+
+
+@pytest.fixture
+def users_test():
+    with app.app_context():
+        users = generate_users()
+    return users
+
+
+@pytest.fixture
+def items_test():
+    with app.app_context():
+        items = generate_items()
+    return items
+
+
+@pytest.fixture
+def access_token(client, users_test):
+    response = client.post("/users/signin", json=users_test[0])
     json_response = response.get_json()
 
     return json_response["access_token"]

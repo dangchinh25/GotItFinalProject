@@ -1,6 +1,10 @@
+from main.app import app
 from main.models.item import ItemModel
 from main.models.category import CategoryModel
 from main.models.user import UserModel
+from main.schemas.category import CategorySchema
+from main.schemas.user import UserSchema
+from main.schemas.item import ItemSchema
 from main.db import db
 from main.helpers import generate_hashed_password
 
@@ -13,6 +17,7 @@ def generate_categories():
     ]
     db.session.add_all(categories)
     db.session.commit()
+    return CategorySchema(many=True).dump(categories)
 
 
 def generate_users():
@@ -20,9 +25,14 @@ def generate_users():
         UserModel(username="hizen", password=generate_hashed_password("123456")),
         UserModel(username="hizen2501", password=generate_hashed_password("0123456"))
     ]
+    dump_user = [
+        UserModel(username="hizen", password="123456"),
+        UserModel(username="hizen2501", password="0123456")
+    ]
 
     db.session.add_all(users)
     db.session.commit()
+    return UserSchema(many=True).dump(dump_user)
 
 
 def generate_items():
@@ -36,3 +46,4 @@ def generate_items():
 
     db.session.add_all(items)
     db.session.commit()
+    return ItemSchema(many=True).dump(items)
