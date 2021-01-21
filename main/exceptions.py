@@ -1,12 +1,13 @@
 class BaseError(Exception):
     status_code = None
     message = None
-    error_data = {}
+    error = {}
 
-    def __init__(self, message, error={}):
+    def __init__(self, message, error=None):
         super().__init__()
         self.message = message
-        self.error_data = error
+        if error is not None:
+            self.error = error
 
 
 class BadRequestError(BaseError):
