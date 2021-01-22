@@ -25,7 +25,7 @@ def get_category_items_successfully(client):
     assert ItemSchema(many=True).load(json_response), "All of object's data should be uniform"
 
 
-def test_get_category_items_fail_with_nonexisted_category_id(client):
+def test_get_category_items_fail_with_not_existed_category_id(client):
     generate_categories()
     url = create_url_with_parameters(category_id=100, limit=10, offset=0)
     response = client.get(url)

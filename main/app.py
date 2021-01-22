@@ -12,11 +12,6 @@ app.config.from_object(config)
 db.init_app(app)
 
 
-@app.before_first_request
-def create_tables():
-    db.create_all()
-
-
 @app.errorhandler(404)
 def page_not_found(error):
     return jsonify({"message": str(error), "error": {}}), 404

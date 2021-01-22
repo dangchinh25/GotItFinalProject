@@ -43,6 +43,10 @@ change the SQLALCHEMY_DATABASE_URI base on your personal database:
 E.g:    
 `SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://root:mathefuka1@localhost:3306/dev"`
 
+After that, run the following command to create database tables:
+
+`python create_tables.py`
+
 #### 6. Start the app
 
 Type the following command to in your terminal:
