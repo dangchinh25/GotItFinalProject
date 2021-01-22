@@ -1,4 +1,4 @@
-from flask import request, jsonify
+from flask import jsonify
 from sqlalchemy.exc import SQLAlchemyError
 
 from main.app import app

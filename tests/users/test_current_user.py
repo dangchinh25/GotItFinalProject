@@ -1,5 +1,3 @@
-import pytest
-
 from tests.helpers import create_headers
 from tests.setup_db import generate_users
 
