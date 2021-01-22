@@ -1,13 +1,23 @@
 import pytest
 from main.schemas.item import ItemSchema
+from tests.setup_db import generate_categories, generate_items
 
 
-def create_url_with_paramenters(category_id, limit, offset):
+def create_url_with_parameters(category_id, limit, offset):
+    if limit is None and offset is None:
+        return f"/categories/{category_id}/items"
+    if limit is None:
+        return f"/categories/{category_id}/items?offset={offset}"
+    if offset is None:
+        return f"/categories/{category_id}/items?limit={limit}"
     return f"/categories/{category_id}/items?limit={limit}&offset={offset}"
 
 
 def get_category_items_success(client):
-    url = create_url_with_paramenters(category_id=3, limit=10, offset=0)
+    categories = generate_categories()
+    generate_items()
+
+    url = create_url_with_parameters(category_id=categories[0]["id"], limit=10, offset=0)
     response = client.get(url)
     json_response = response.get_json()
     assert response.status_code == 200, "Successful call should return 200 status code"
@@ -16,7 +26,8 @@ def get_category_items_success(client):
 
 
 def test_get_category_items_nonexisted_category_id(client):
-    url = create_url_with_paramenters(category_id=100, limit=10, offset=0)
+    generate_categories()
+    url = create_url_with_parameters(category_id=100, limit=10, offset=0)
     response = client.get(url)
     json_response = response.get_json()
     assert response.status_code == 404, "Not found error should return 404 status code"
@@ -24,9 +35,10 @@ def test_get_category_items_nonexisted_category_id(client):
     assert json_response["error"] == {}
 
 
-@pytest.mark.parametrize("category_id, limit, offset", [(3, "a", 1), (3, 1, "a"), (3, "a", "a")])
-def test_get_category_items_invalid_request_data(client, category_id, limit, offset):
-    url = create_url_with_paramenters(category_id, limit, offset)
+@pytest.mark.parametrize("limit, offset", [("a", 1), (1, "a"), ("a", "a")])
+def test_get_category_items_invalid_request_data(client, limit, offset):
+    categories = generate_categories()
+    url = create_url_with_parameters(categories[0]["id"], limit, offset)
     response = client.get(url)
     json_response = response.get_json()
     assert response.status_code == 400, "Invalid request call should return 400 status code"
@@ -34,8 +46,11 @@ def test_get_category_items_invalid_request_data(client, category_id, limit, off
     assert json_response["error"] != {}, "Invalid request data should contain error body"
 
 
-@pytest.mark.parametrize("url", ["/categories/3/items?offset=1", "/categories/3/items?limit=1", "/categories/3/items"])
-def test_get_category_item_missing_data(client, url):
+@pytest.mark.parametrize("limit, offset", [(None, 1), (1, None), (None, None)])
+def test_get_category_item_missing_data(client, limit, offset):
+    categories = generate_categories()
+    url = create_url_with_parameters(categories[0]["id"], limit, offset)
+    print(url)
     response = client.get(url)
     json_response = response.get_json()
     assert response.status_code == 200, "Successful call should return 200 status code"

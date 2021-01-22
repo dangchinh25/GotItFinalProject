@@ -1,8 +1,9 @@
-import json
+from main.app import app
 
 
-def create_headers(access_token):
+def create_headers(access_token=None):
     headers = dict()
+    headers["Content-Type"] = "application/json"
     if access_token:
         headers["Authorization"] = f"Bearer {access_token}"
 

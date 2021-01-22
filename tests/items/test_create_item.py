@@ -3,6 +3,7 @@ import pytest
 
 from tests.helpers import create_headers
 from main.schemas.item import ItemSchema
+from tests.setup_db import generate_items, generate_categories
 
 
 def create_item(client, access_token, category_id, data):
@@ -12,8 +13,10 @@ def create_item(client, access_token, category_id, data):
     return response, json_response
 
 
-def test_create_item_success(client, access_token, categories_test, items_test):
-    category_id = categories_test[0]["id"]
+def test_create_item_success(client, access_token):
+    categories = generate_categories()
+    generate_items()
+    category_id = categories[0]["id"]
     new_item = {"name": "table", "description": "A table", "category_id": category_id}
 
     response, json_response = create_item(client, access_token, category_id, new_item)
@@ -22,9 +25,12 @@ def test_create_item_success(client, access_token, categories_test, items_test):
     assert ItemSchema().load(json_response), "All of object's data should be uniform"
 
 
-def test_create_item_existed_item(client, access_token, categories_test, items_test):
-    category_id = categories_test[0]["id"]
-    existed_name = items_test[0]["name"]
+def test_create_item_existed_item(client, access_token):
+    categories = generate_categories()
+    items = generate_items()
+
+    category_id = categories[0]["id"]
+    existed_name = items[0]["name"]
     new_item = {"name": existed_name, "description": "A table", "category_id": category_id}
 
     response, json_response = create_item(client, access_token, category_id, new_item)
@@ -34,16 +40,16 @@ def test_create_item_existed_item(client, access_token, categories_test, items_t
     assert json_response["error"] == {}
 
 
-@pytest.mark.parametrize("data", [
-    {"description": "A table", "category_id": 1},
-    {"name": "table", "category_id": 1},
-    {"name": "table", "description": "A table", },
-    {"name": 123123123, "description": "A table", "category_id": 1},
-    {"name": "table", "description": 213123123, "category_id": 1},
-    {"name": "table", "description": "A table", "category_id": "ewewf"}
+@pytest.mark.parametrize("category_id, data", [
+    (1, {"description": "A table", "category_id": 1}),
+    (1, {"name": "table", "category_id": 1}),
+    (1, {"name": "table", "description": "A table"}),
+    (1, {"name": 123123123, "description": "A table", "category_id": 1}),
+    (1, {"name": "table", "description": 213123123, "category_id": 1}),
+    (1, {"name": "table", "description": "A table", "category_id": "ewewf"})
 ])
-def test_create_invalid_request_data(client, access_token, categories_test, data):
-    category_id = categories_test[0]["id"]
+def test_create_item_invalid_request_data(client, access_token, category_id, data):
+    generate_categories()
 
     response, json_response = create_item(client, access_token, category_id, data)
 
@@ -52,8 +58,9 @@ def test_create_invalid_request_data(client, access_token, categories_test, data
     assert json_response["error"] != {}
 
 
-def test_create_item_invalid_token(client, categories_test):
-    category_id = categories_test[0]["id"]
+def test_create_item_invalid_token(client):
+    categories = generate_categories()
+    category_id = categories[0]["id"]
 
     response = client.post("/categories/1/items", json={"name": "table", "description": "A table", "category_id": category_id})
     json_response = response.get_json()
@@ -64,6 +71,7 @@ def test_create_item_invalid_token(client, categories_test):
 
 
 def test_create_item_not_exist_category(client, access_token):
+    generate_categories()
     not_existed_category_id = 100
     new_item = {"name": "table", "description": "A table", "category_id": not_existed_category_id}
 

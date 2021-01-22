@@ -1,22 +1,25 @@
 import pytest
 
 from tests.helpers import create_headers, signin
+from tests.setup_db import generate_categories, generate_items, generate_users
 
 
-def delete_item(client, access_token, item_id):
+def delete_item(client, item_id, access_token=None):
     response = client.delete(f"/items/{item_id}", headers=create_headers(access_token))
 
     return response
 
 
 def test_delete_item_success(client, access_token):
-    response = delete_item(client, access_token, item_id=5)
+    generate_categories()
+    items = generate_items()
+    response = delete_item(client, items[0]["id"], access_token)
 
     assert response.status_code == 200
 
 
 def test_delete_item_invalid_token(client):
-    response = client.delete("/items/1")
+    response = delete_item(client, item_id=1)
     json_response = response.get_json()
 
     assert response.status_code == 400, "Missing credential call should return 400 status code"
@@ -25,8 +28,11 @@ def test_delete_item_invalid_token(client):
 
 
 def test_delete_item_invalid_user(client):
-    _, json_response = signin(client, {"username": "hizen2501", "password": "0123456"})
-    response = delete_item(client, json_response["access_token"], item_id=1)
+    users = generate_users()
+    generate_categories()
+    items = generate_items()
+    _, json_response = signin(client, users[1])
+    response = delete_item(client, items[0]["id"], json_response["access_token"])
     json_response = response.get_json()
 
     assert response.status_code == 403, "Forbidden credential call should return 403 status code"
@@ -35,7 +41,7 @@ def test_delete_item_invalid_user(client):
 
 
 def test_delete_item_not_exist(client, access_token):
-    response = delete_item(client, access_token, item_id=100)
+    response = delete_item(client, item_id=100, access_token=access_token)
     json_response = response.get_json()
 
     assert response.status_code == 404, "Not found error should return 404 status code"

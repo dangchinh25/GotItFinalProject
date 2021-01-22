@@ -15,9 +15,10 @@ def generate_categories():
         CategoryModel(name="groceries"),
         CategoryModel(name="tech")
     ]
-    db.session.add_all(categories)
-    db.session.commit()
-    return CategorySchema(many=True).dump(categories)
+    with app.app_context():
+        db.session.add_all(categories)
+        db.session.commit()
+        return CategorySchema(many=True).dump(categories)
 
 
 def generate_users():
@@ -29,10 +30,10 @@ def generate_users():
         UserModel(username="hizen", password="123456"),
         UserModel(username="hizen2501", password="0123456")
     ]
-
-    db.session.add_all(users)
-    db.session.commit()
-    return UserSchema(many=True).dump(dump_user)
+    with app.app_context():
+        db.session.add_all(users)
+        db.session.commit()
+        return UserSchema(many=True).dump(dump_user)
 
 
 def generate_items():
@@ -43,7 +44,7 @@ def generate_items():
         ItemModel(user_id=1, category_id=3, name="dellmonitor", description="Good stuff"),
         ItemModel(user_id=2, category_id=2, name="toiletpaper", description="We all need this"),
     ]
-
-    db.session.add_all(items)
-    db.session.commit()
-    return ItemSchema(many=True).dump(items)
+    with app.app_context():
+        db.session.add_all(items)
+        db.session.commit()
+        return ItemSchema(many=True).dump(items)

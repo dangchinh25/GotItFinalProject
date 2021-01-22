@@ -1,8 +1,10 @@
 from main.schemas.category import CategorySchema
+from tests.setup_db import generate_categories
 
 
-def test_get_category_success(client, categories_test):
-    category_id = categories_test[0]["id"]
+def test_get_category_success(client):
+    categories = generate_categories()
+    category_id = categories[0]["id"]
     response = client.get(f"/categories/{category_id}")
     json_response = response.get_json()
     assert response.status_code == 200, "Successful call should return 200 status code"

@@ -1,8 +1,13 @@
 from main.schemas.item import ItemSchema
 
+from tests.setup_db import generate_users, generate_categories, generate_items
 
-def test_get_item_success(client, items_test):
-    item_id = items_test[0]["id"]
+
+def test_get_item_success(client):
+    generate_users()
+    generate_categories()
+    items = generate_items()
+    item_id = items[0]["id"]
     response = client.get(f"/items/{item_id}")
     json_response = response.get_json()
     assert response.status_code == 200, "Successful call should return 200 status code"
