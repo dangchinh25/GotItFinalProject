@@ -6,7 +6,7 @@ from tests.setup_db import generate_users
 
 def test_signup_success(client):
     credentials = {"username": "hizen2502", "password": "0123456"}
-    response, json_response = signup(client, credentials)
+    response, json_response = signup(client, credentials=credentials)
 
     assert response.status_code == 201, "Successful call should return 200 status code"
     assert json_response["access_token"] is not None, "Access token should be available when signing in/up"
@@ -15,7 +15,7 @@ def test_signup_success(client):
 def test_signup_fail_with_existed_username(client):
     users = generate_users()
     credentials = {"username": users[0]["username"], "password": "123456"}
-    response, json_response = signup(client, credentials)
+    response, json_response = signup(client, credentials=credentials)
 
     assert response.status_code == 400, "Invalid credential call should return 400 status code"
     assert json_response["message"] == "Username already existed."
@@ -31,7 +31,7 @@ def test_signup_fail_with_existed_username(client):
                          ]
                          )
 def test_signup_fail_with_invalid_request_data(client, credentials):
-    response, json_response = signup(client, credentials)
+    response, json_response = signup(client, credentials=credentials)
 
     assert response.status_code == 400, "Invalid credential call should return 400 status code"
     assert json_response["message"] == "Invalid request data."

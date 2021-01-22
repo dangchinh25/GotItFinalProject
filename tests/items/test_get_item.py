@@ -7,6 +7,7 @@ def test_get_item_success(client):
     generate_users()
     generate_categories()
     items = generate_items()
+
     item_id = items[0]["id"]
     response = client.get(f"/items/{item_id}")
     json_response = response.get_json()

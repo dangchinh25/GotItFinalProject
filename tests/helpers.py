@@ -1,6 +1,3 @@
-from main.app import app
-
-
 def create_headers(access_token=None):
     headers = dict()
     headers["Content-Type"] = "application/json"

@@ -13,7 +13,7 @@ def delete_item(client, item_id, access_token=None):
 def test_delete_item_success(client, access_token):
     generate_categories()
     items = generate_items()
-    response = delete_item(client, items[0]["id"], access_token)
+    response = delete_item(client, item_id=items[0]["id"], access_token=access_token)
 
     assert response.status_code == 200
 
@@ -31,8 +31,8 @@ def test_delete_item_invalid_user(client):
     users = generate_users()
     generate_categories()
     items = generate_items()
-    _, json_response = signin(client, users[1])
-    response = delete_item(client, items[0]["id"], json_response["access_token"])
+    _, json_response = signin(client, credentials=users[1])
+    response = delete_item(client, item_id=items[0]["id"], access_token=json_response["access_token"])
     json_response = response.get_json()
 
     assert response.status_code == 403, "Forbidden credential call should return 403 status code"

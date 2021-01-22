@@ -54,7 +54,7 @@ def test_put_item_invalid_user(client):
     users = generate_users()
     items = generate_items()
     data = {"name": "lamp2", "description": "Slightly better lamp", "category_id": 1}
-    _, json_response = signin(client, users[1])
+    _, json_response = signin(client, credentials=users[1])
     response, json_response = put_item(client, item_id=items[0]["id"], data=data, access_token=json_response["access_token"])
 
     assert response.status_code == 403, "Forbiden call should return 403 status code"

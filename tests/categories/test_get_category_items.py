@@ -38,7 +38,7 @@ def test_get_category_items_nonexisted_category_id(client):
 @pytest.mark.parametrize("limit, offset", [("a", 1), (1, "a"), ("a", "a")])
 def test_get_category_items_invalid_request_data(client, limit, offset):
     categories = generate_categories()
-    url = create_url_with_parameters(categories[0]["id"], limit, offset)
+    url = create_url_with_parameters(categories[0]["id"], limit=limit, offset=offset)
     response = client.get(url)
     json_response = response.get_json()
     assert response.status_code == 400, "Invalid request call should return 400 status code"
@@ -49,8 +49,6 @@ def test_get_category_items_invalid_request_data(client, limit, offset):
 @pytest.mark.parametrize("limit, offset", [(None, 1), (1, None), (None, None)])
 def test_get_category_item_missing_data(client, limit, offset):
     categories = generate_categories()
-    url = create_url_with_parameters(categories[0]["id"], limit, offset)
-    print(url)
+    url = create_url_with_parameters(categories[0]["id"], limit=limit, offset=offset)
     response = client.get(url)
-    json_response = response.get_json()
     assert response.status_code == 200, "Successful call should return 200 status code"
