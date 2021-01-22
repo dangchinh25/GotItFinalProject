@@ -1,11 +1,11 @@
 from main.app import app
+from main.db import db
 from main.models.item import ItemModel
 from main.models.category import CategoryModel
 from main.models.user import UserModel
 from main.schemas.category import CategorySchema
 from main.schemas.user import UserSchema
 from main.schemas.item import ItemSchema
-from main.db import db
 from main.helpers import generate_hashed_password
 
 
