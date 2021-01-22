@@ -23,12 +23,12 @@ def test_put_item_success(client, access_token):
 
 
 @pytest.mark.parametrize("item_id, data", [
-    (1, {"description": "Slightly better lamp", "category_id": 1}),
-    (1, {"name": "lamp2", "category_id": 1}),
-    (1, {"name": "lamp2", "description": "Slightly better lamp"}),
-    (1, {"name": 1231232, "description": "Slightly better lamp", "category_id": 1}),
-    (1, {"name": "lamp2", "description": 123123, "category_id": 1}),
-    (1, {"name": "lamp2", 'a'*100: "Slightly better lamp", "category_id": "efwef"}),
+    (1, {"description": "Slightly better lamp", "category_id": 1}),  # Missing name
+    (1, {"name": "lamp2", "category_id": 1}),  # Missing description
+    (1, {"name": "lamp2", "description": "Slightly better lamp"}),  # Missing category_id
+    (1, {"name": 1231232, "description": "Slightly better lamp", "category_id": 1}),  # Name is not string
+    (1, {"name": "lamp2", "description": 123123, "category_id": 1}),  # Description is not string
+    (1, {"name": "lamp2", 'a'*100: "Slightly better lamp", "category_id": "efwef"}),  # Category_id is not int
 ])
 def test_put_item_invalid_request_data(client, access_token, item_id, data):
     generate_categories()

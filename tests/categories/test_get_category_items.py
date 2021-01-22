@@ -35,7 +35,12 @@ def test_get_category_items_nonexisted_category_id(client):
     assert json_response["error"] == {}
 
 
-@pytest.mark.parametrize("limit, offset", [("a", 1), (1, "a"), ("a", "a")])
+@pytest.mark.parametrize("limit, offset",
+                         [
+                             ("a", 1),  # Limit is not int
+                             (1, "a"),  # Offset is not int
+                             ("a", "a")  # Both limit and offset is not int
+                         ])
 def test_get_category_items_invalid_request_data(client, limit, offset):
     categories = generate_categories()
     url = create_url_with_parameters(categories[0]["id"], limit=limit, offset=offset)
@@ -46,7 +51,12 @@ def test_get_category_items_invalid_request_data(client, limit, offset):
     assert json_response["error"] != {}, "Invalid request data should contain error body"
 
 
-@pytest.mark.parametrize("limit, offset", [(None, 1), (1, None), (None, None)])
+@pytest.mark.parametrize("limit, offset",
+                         [
+                             (None, 1),  # Limit is not provided
+                             (1, None),  # Offset is not provided
+                             (None, None)  # Both limit and offset is not provided
+                         ])
 def test_get_category_item_missing_data(client, limit, offset):
     categories = generate_categories()
     url = create_url_with_parameters(categories[0]["id"], limit=limit, offset=offset)

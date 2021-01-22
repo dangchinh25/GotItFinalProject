@@ -14,8 +14,10 @@ from main.models.item import ItemModel
 from main.schemas.pagination import PaginationSchema
 
 
-# load request body into json and validate according to predefined schema
 def validate_input(schema):
+    """
+    Load request body into json and validate according to predefined schema
+    """
     def wrapper(func):
         @functools.wraps(func)
         def validate(*args, **kwargs):

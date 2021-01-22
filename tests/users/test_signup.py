@@ -24,10 +24,10 @@ def test_signup_fail_with_existed_username(client):
 
 @pytest.mark.parametrize("credentials",
                          [
-                             {"username": "hizen2502"},
-                             {"password": "0123456789"},
-                             {"username": "", "password": "0123456789"},
-                             {"username": "hizen2502", "password": ""},
+                             {"username": "hizen2502"},  # Missing password
+                             {"password": "0123456789"},  # Missing username
+                             {"username": "", "password": "0123456789"},  # Invalid username
+                             {"username": "hizen2502", "password": ""},  # Invalid password
                          ]
                          )
 def test_signup_fail_with_invalid_request_data(client, credentials):

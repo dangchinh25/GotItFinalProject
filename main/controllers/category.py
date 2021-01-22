@@ -24,7 +24,6 @@ def get_categories():
 @app.route("/categories/<int:category_id>", methods=["GET"])
 @check_category_exist
 def get_category(category):
-    # get info of 1 category
     return jsonify(CategorySchema().dump(category)), 200
 
 
@@ -32,7 +31,6 @@ def get_category(category):
 @check_category_exist
 @validate_pagination
 def get_category_items(category, pagination):
-    # get all items of a particular category
     try:
         items = ItemSchema(many=True).dump(category.items.limit(pagination["limit"]).offset(pagination["offset"]))
         total = category.items.count()

@@ -41,12 +41,12 @@ def test_create_item_existed_item(client, access_token):
 
 
 @pytest.mark.parametrize("category_id, data", [
-    (1, {"description": "A table", "category_id": 1}),
-    (1, {"name": "table", "category_id": 1}),
-    (1, {"name": "table", "description": "A table"}),
-    (1, {"name": 123123123, "description": "A table", "category_id": 1}),
-    (1, {"name": "table", "description": 213123123, "category_id": 1}),
-    (1, {"name": "table", "description": "A table", "category_id": "ewewf"})
+    (1, {"description": "A table", "category_id": 1}),  # Missing name
+    (1, {"name": "table", "category_id": 1}),   # Missing description
+    (1, {"name": "table", "description": "A table"}),  # Missing category_id
+    (1, {"name": 123123123, "description": "A table", "category_id": 1}),  # Name is not string
+    (1, {"name": "table", "description": 213123123, "category_id": 1}),  # Description is not string
+    (1, {"name": "table", "description": "A table", "category_id": "ewewf"})  # Category_id is not int
 ])
 def test_create_item_invalid_request_data(client, access_token, category_id, data):
     generate_categories()

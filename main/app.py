@@ -15,7 +15,6 @@ def create_tables():
     db.create_all()
 
 
-# Register error handler for our Flask app
 @app.errorhandler(BaseError)
 def handle_customized_error(error):
     return jsonify({"message": error.message, "error": error.error}), error.status_code
