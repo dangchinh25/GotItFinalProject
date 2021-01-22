@@ -1,3 +1,5 @@
+import logging
+
 from flask import Flask, jsonify
 
 from main.db import db
@@ -17,11 +19,17 @@ def create_tables():
 
 @app.errorhandler(404)
 def page_not_found(error):
-    app.logger.info(str(error))
     return jsonify({"message": str(error), "error": {}}), 404
 
 
 @app.errorhandler(BaseError)
 def handle_customized_error(error):
     return jsonify({"message": error.message, "error": error.error}), error.status_code
+
+
+@app.errorhandler(Exception)
+def handle_general_error(error):
+    logging.exception(error)
+    return jsonify({"message": "Internal server error", "error": {}})
+
 

@@ -8,7 +8,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from marshmallow import ValidationError
 
 from main.app import app
-from main.exceptions import BadRequestError, InternalServerError, NotFoundError, UnauthorizedError
+from main.exceptions import BadRequestError, NotFoundError, UnauthorizedError
 from main.models.category import CategoryModel
 from main.models.item import ItemModel
 from main.schemas.pagination import PaginationSchema
@@ -37,8 +37,8 @@ def check_category_exist(func):
         category_id = kwargs.pop("category_id")
         try:
             category = CategoryModel.query.get(category_id)
-        except SQLAlchemyError:
-            raise InternalServerError()
+        except SQLAlchemyError as error:
+            raise SQLAlchemyError(error)
         if not category:
             raise NotFoundError(f"Category with id {category_id} does not exist.")
         return func(category=category, *args, **kwargs)
@@ -51,8 +51,8 @@ def check_item_exist(func):
         item_id = kwargs.pop("item_id")
         try:
             item = ItemModel.query.get(item_id)
-        except SQLAlchemyError:
-            raise InternalServerError()
+        except SQLAlchemyError as error:
+            raise SQLAlchemyError(error)
         if not item:
             raise NotFoundError(f"Item with id {item_id} does not exist.")
         return func(item=item, *args, **kwargs)

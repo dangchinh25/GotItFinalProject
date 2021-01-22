@@ -4,7 +4,7 @@ from tests.helpers import signup
 from tests.setup_db import generate_users
 
 
-def test_signup_success(client):
+def test_signup_successfully(client):
     credentials = {"username": "hizen2502", "password": "0123456"}
     response, json_response = signup(client, credentials=credentials)
 

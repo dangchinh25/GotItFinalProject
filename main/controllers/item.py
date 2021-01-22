@@ -5,7 +5,7 @@ from main.app import app
 from main.db import db
 from main.schemas.item import ItemSchema
 from main.helpers import validate_input, validate_token, check_item_exist
-from main.exceptions import ForbiddenError, InternalServerError
+from main.exceptions import ForbiddenError
 
 
 @app.route("/items/<int:item_id>", methods=["GET"])
@@ -29,8 +29,8 @@ def update_item(user_id, data, item):
 
         db.session.add(item)
         db.session.commit()
-    except SQLAlchemyError:
-        raise InternalServerError()
+    except SQLAlchemyError as error:
+        raise SQLAlchemyError(error)
 
     return jsonify(ItemSchema().dump(item)), 201
 
@@ -45,7 +45,7 @@ def delete_item(user_id, item):
     try:
         db.session.delete(item)
         db.session.commit()
-    except SQLAlchemyError:
-        raise InternalServerError()
+    except SQLAlchemyError as error:
+        raise SQLAlchemyError(error)
 
     return jsonify({}), 200

@@ -26,10 +26,3 @@ class NotFoundError(BaseError):
     status_code = 404
 
 
-class InternalServerError(BaseError):
-    status_code = 500
-
-    def __init__(self):
-        self.message = "Internal server error"
-
-

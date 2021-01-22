@@ -1,21 +1,20 @@
 import pytest
 
 
-from tests.helpers import create_headers
+from tests.helpers import create_authorizaton_headers
 from main.schemas.item import ItemSchema
 from tests.setup_db import generate_items, generate_categories
 
 
 def create_item(client, category_id, data, access_token=None):
-    response = client.post(f"/categories/{category_id}/items", headers=create_headers(access_token), json=data)
+    response = client.post(f"/categories/{category_id}/items", headers=create_authorizaton_headers(access_token), json=data)
     json_response = response.get_json()
 
     return response, json_response
 
 
-def test_create_item_success(client, access_token):
+def test_create_item_successfully(client, access_token):
     categories = generate_categories()
-    generate_items()
     category_id = categories[0]["id"]
     new_item = {"name": "table", "description": "A table", "category_id": category_id}
 
@@ -25,7 +24,7 @@ def test_create_item_success(client, access_token):
     assert ItemSchema().load(json_response), "All of object's data should be uniform"
 
 
-def test_create_item_existed_item(client, access_token):
+def test_create_item_fail_with_existed_item(client, access_token):
     categories = generate_categories()
     items = generate_items()
 
@@ -48,7 +47,7 @@ def test_create_item_existed_item(client, access_token):
     (1, {"name": "table", "description": 213123123, "category_id": 1}),  # Description is not string
     (1, {"name": "table", "description": "A table", "category_id": "ewewf"})  # Category_id is not int
 ])
-def test_create_item_invalid_request_data(client, access_token, category_id, data):
+def test_create_item_fail_with_invalid_request_data(client, access_token, category_id, data):
     generate_categories()
 
     response, json_response = create_item(client, access_token=access_token, category_id=category_id, data=data)
@@ -58,7 +57,7 @@ def test_create_item_invalid_request_data(client, access_token, category_id, dat
     assert json_response["error"] != {}
 
 
-def test_create_item_invalid_token(client):
+def test_create_item_fail_with_invalid_token(client):
     categories = generate_categories()
     category_id = categories[0]["id"]
     data = {"name": "table", "description": "A table", "category_id": category_id}
@@ -70,7 +69,7 @@ def test_create_item_invalid_token(client):
     assert json_response["error"] == {}
 
 
-def test_create_item_not_exist_category(client, access_token):
+def test_create_item_fail_with_not_exist_category(client, access_token):
     generate_categories()
     not_existed_category_id = 100
     new_item = {"name": "table", "description": "A table", "category_id": not_existed_category_id}

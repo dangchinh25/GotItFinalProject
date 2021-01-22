@@ -1,18 +1,18 @@
 import pytest
 
 from main.schemas.item import ItemSchema
-from tests.helpers import create_headers, signin
+from tests.helpers import create_authorizaton_headers, signin
 from tests.setup_db import generate_users, generate_items, generate_categories
 
 
 def put_item(client, item_id, data, access_token=None):
-    response = client.put(f"/items/{item_id}", headers=create_headers(access_token), json=data)
+    response = client.put(f"/items/{item_id}", headers=create_authorizaton_headers(access_token), json=data)
     json_response = response.get_json()
 
     return response, json_response
 
 
-def test_put_item_success(client, access_token):
+def test_put_item_successfully(client, access_token):
     categories = generate_categories()
     items = generate_items()
     data = {"name": "lamp2", "description": "Slightly better lamp", "category_id": categories[0]["id"]}
@@ -30,7 +30,7 @@ def test_put_item_success(client, access_token):
     (1, {"name": "lamp2", "description": 123123, "category_id": 1}),  # Description is not string
     (1, {"name": "lamp2", 'a'*100: "Slightly better lamp", "category_id": "efwef"}),  # Category_id is not int
 ])
-def test_put_item_invalid_request_data(client, access_token, item_id, data):
+def test_put_item_fail_with_invalid_request_data(client, access_token, item_id, data):
     generate_categories()
     items = generate_items()
     response, json_response = put_item(client, item_id=items[0]["id"], data=data, access_token=access_token)
@@ -40,7 +40,7 @@ def test_put_item_invalid_request_data(client, access_token, item_id, data):
     assert json_response["error"] != {}
 
 
-def test_put_item_invalid_token(client):
+def test_put_item_fail_with_invalid_token(client):
     data = {"name": "lamp2", "description": "Slightly better lamp", "category_id": 1}
     response, json_response = put_item(client, item_id=1, data=data)
 
@@ -49,7 +49,7 @@ def test_put_item_invalid_token(client):
     assert json_response["error"] == {}
 
 
-def test_put_item_invalid_user(client):
+def test_put_item_fail_with_invalid_user(client):
     generate_categories()
     users = generate_users()
     items = generate_items()
@@ -62,7 +62,7 @@ def test_put_item_invalid_user(client):
     assert json_response["error"] == {}
 
 
-def test_put_item_not_exist(client, access_token):
+def test_put_item_fail_with_not_exist_item(client, access_token):
     data = {"name": "lamp2", "description": "Slightly better lamp", "category_id": 1}
     response, json_response = put_item(client, item_id=100, data=data, access_token=access_token)
 

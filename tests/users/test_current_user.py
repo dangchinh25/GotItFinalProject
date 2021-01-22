@@ -1,18 +1,18 @@
-from tests.helpers import create_headers
+from tests.helpers import create_authorizaton_headers
 from tests.setup_db import generate_users
 
 
-def test_current_user_success(client, access_token):
-    response = client.get("/users/me", headers=create_headers(access_token))
+def test_current_user_successfully(client, access_token):
+    response = client.get("/users/me", headers=create_authorizaton_headers(access_token))
     json_response = response.get_json()
 
     assert response.status_code == 200, "Successful call should return 200 status code"
     assert json_response["id"]
 
 
-def test_current_user_invalid_token(client):
+def test_current_user_fail_with_invalid_token(client):
     generate_users()
-    response = client.get("/users/me", headers=create_headers("aaaaa"))
+    response = client.get("/users/me", headers=create_authorizaton_headers("aaaaa"))
     json_response = response.get_json()
 
     assert response.status_code == 401, "Invalid credentials call should return 401 status code"
@@ -20,7 +20,7 @@ def test_current_user_invalid_token(client):
     assert json_response["error"] == {}
 
 
-def test_current_user_invalid_token(client):
+def test_current_user_fail_with_missing_token(client):
     generate_users()
     response = client.get("/users/me")
     json_response = response.get_json()

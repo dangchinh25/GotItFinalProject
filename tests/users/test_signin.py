@@ -4,7 +4,7 @@ from tests.helpers import signin
 from tests.setup_db import generate_users
 
 
-def test_signin_success(client):
+def test_signin_successfully(client):
     users = generate_users()
     response, json_response = signin(client, credentials=users[0])
 

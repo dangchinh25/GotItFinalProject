@@ -22,18 +22,13 @@ def generate_categories():
 
 
 def generate_users():
-    users = [
-        UserModel(username="hizen", password=generate_hashed_password("123456")),
-        UserModel(username="hizen2501", password=generate_hashed_password("0123456"))
-    ]
-    dump_user = [
-        UserModel(username="hizen", password="123456"),
-        UserModel(username="hizen2501", password="0123456")
-    ]
+    users = [{"id": 1, "username": "hizen", "password": "123456"}, {"id": 2, "username": "hizen2501", "password": "0123456"}]
     with app.app_context():
-        db.session.add_all(users)
-        db.session.commit()
-        return UserSchema(many=True).dump(dump_user)
+        for user in users:
+            new_user = UserModel(username=user["username"], password=generate_hashed_password(user["password"]))
+            db.session.add(new_user)
+            db.session.commit()
+    return UserSchema(many=True).dump(users)
 
 
 def generate_items():

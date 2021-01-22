@@ -7,7 +7,7 @@ from main.models.user import UserModel
 from main.schemas.user import UserSchema
 from main.helpers import validate_input
 from main.helpers import generate_token, validate_token, generate_hashed_password, validate_hashed_password
-from main.exceptions import BadRequestError, InternalServerError
+from main.exceptions import BadRequestError
 
 
 @app.route("/users/signin", methods=["POST"])
@@ -15,8 +15,8 @@ from main.exceptions import BadRequestError, InternalServerError
 def signin(data):
     try:
         existing_user = UserModel.query.filter_by(username=data["username"]).one_or_none()
-    except SQLAlchemyError:
-        raise InternalServerError()
+    except SQLAlchemyError as error:
+        raise SQLAlchemyError(error)
     if not existing_user or not validate_hashed_password(data["password"], existing_user.password):
         raise BadRequestError("Invalid credentials.")
 
@@ -28,8 +28,8 @@ def signin(data):
 def signup(data):
     try:
         existing_user = UserModel.query.filter_by(username=data["username"]).one_or_none()
-    except SQLAlchemyError:
-        raise InternalServerError()
+    except SQLAlchemyError as error:
+        raise SQLAlchemyError(error)
 
     if existing_user:
         raise BadRequestError("Username already existed.")
@@ -39,8 +39,8 @@ def signup(data):
     try:
         db.session.add(user)
         db.session.commit()
-    except SQLAlchemyError:
-        raise InternalServerError()
+    except SQLAlchemyError as error:
+        raise SQLAlchemyError(error)
 
     return jsonify({"access_token": generate_token(user.id)}), 201
 

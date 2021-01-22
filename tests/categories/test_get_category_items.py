@@ -13,7 +13,7 @@ def create_url_with_parameters(category_id, limit, offset):
     return f"/categories/{category_id}/items?limit={limit}&offset={offset}"
 
 
-def get_category_items_success(client):
+def get_category_items_successfully(client):
     categories = generate_categories()
     generate_items()
 
@@ -25,7 +25,7 @@ def get_category_items_success(client):
     assert ItemSchema(many=True).load(json_response), "All of object's data should be uniform"
 
 
-def test_get_category_items_nonexisted_category_id(client):
+def test_get_category_items_fail_with_nonexisted_category_id(client):
     generate_categories()
     url = create_url_with_parameters(category_id=100, limit=10, offset=0)
     response = client.get(url)
@@ -41,7 +41,7 @@ def test_get_category_items_nonexisted_category_id(client):
                              (1, "a"),  # Offset is not int
                              ("a", "a")  # Both limit and offset is not int
                          ])
-def test_get_category_items_invalid_request_data(client, limit, offset):
+def test_get_category_items_fail_with_invalid_request_data(client, limit, offset):
     categories = generate_categories()
     url = create_url_with_parameters(categories[0]["id"], limit=limit, offset=offset)
     response = client.get(url)
@@ -57,7 +57,7 @@ def test_get_category_items_invalid_request_data(client, limit, offset):
                              (1, None),  # Offset is not provided
                              (None, None)  # Both limit and offset is not provided
                          ])
-def test_get_category_item_missing_data(client, limit, offset):
+def test_get_category_item_fail_with_missing_data(client, limit, offset):
     categories = generate_categories()
     url = create_url_with_parameters(categories[0]["id"], limit=limit, offset=offset)
     response = client.get(url)

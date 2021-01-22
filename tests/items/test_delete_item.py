@@ -1,14 +1,14 @@
-from tests.helpers import create_headers, signin
+from tests.helpers import create_authorizaton_headers, signin
 from tests.setup_db import generate_categories, generate_items, generate_users
 
 
 def delete_item(client, item_id, access_token=None):
-    response = client.delete(f"/items/{item_id}", headers=create_headers(access_token))
+    response = client.delete(f"/items/{item_id}", headers=create_authorizaton_headers(access_token))
 
     return response
 
 
-def test_delete_item_success(client, access_token):
+def test_delete_item_successfully(client, access_token):
     generate_categories()
     items = generate_items()
     response = delete_item(client, item_id=items[0]["id"], access_token=access_token)
@@ -16,7 +16,7 @@ def test_delete_item_success(client, access_token):
     assert response.status_code == 200
 
 
-def test_delete_item_invalid_token(client):
+def test_delete_item_fail_with_invalid_token(client):
     response = delete_item(client, item_id=1)
     json_response = response.get_json()
 
@@ -25,7 +25,7 @@ def test_delete_item_invalid_token(client):
     assert json_response["error"] == {}
 
 
-def test_delete_item_invalid_user(client):
+def test_delete_item_fail_with_invalid_user(client):
     users = generate_users()
     generate_categories()
     items = generate_items()
@@ -38,7 +38,7 @@ def test_delete_item_invalid_user(client):
     assert json_response["error"] == {}
 
 
-def test_delete_item_not_exist(client, access_token):
+def test_delete_item_fail_with_not_exist_item(client, access_token):
     response = delete_item(client, item_id=100, access_token=access_token)
     json_response = response.get_json()
 

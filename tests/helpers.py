@@ -1,6 +1,5 @@
-def create_headers(access_token=None):
+def create_authorizaton_headers(access_token=None):
     headers = dict()
-    headers["Content-Type"] = "application/json"
     if access_token:
         headers["Authorization"] = f"Bearer {access_token}"
 
