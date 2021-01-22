@@ -15,6 +15,13 @@ def create_tables():
     db.create_all()
 
 
+@app.errorhandler(404)
+def page_not_found(error):
+    app.logger.info(str(error))
+    return jsonify({"message": str(error), "error": {}}), 404
+
+
 @app.errorhandler(BaseError)
 def handle_customized_error(error):
     return jsonify({"message": error.message, "error": error.error}), error.status_code
+
