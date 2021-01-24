@@ -3,11 +3,11 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from main.app import app
 from main.db import db
+from main.exceptions import BadRequestError
+from main.helpers import generate_token, validate_token, generate_hashed_password, validate_hashed_password, \
+    validate_input
 from main.models.user import UserModel
 from main.schemas.user import UserSchema
-from main.helpers import validate_input
-from main.helpers import generate_token, validate_token, generate_hashed_password, validate_hashed_password
-from main.exceptions import BadRequestError
 
 
 @app.route("/users/signin", methods=["POST"])

@@ -3,9 +3,9 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from main.app import app
 from main.db import db
-from main.schemas.item import ItemSchema
-from main.helpers import validate_input, validate_token, check_item_exist
 from main.exceptions import ForbiddenError
+from main.helpers import validate_input, validate_token, check_item_exist
+from main.schemas.item import ItemSchema
 
 
 @app.route("/items/<int:item_id>", methods=["GET"])
