@@ -1,12 +1,6 @@
 from main.helpers import generate_token
-from tests.helpers import create_authorizaton_headers, signin
+from tests.helpers import create_authorizaton_headers
 from tests.setup_db import generate_categories, generate_items, generate_users
-
-
-def delete_item(client, item_id, access_token=None):
-    response = client.delete(f"/items/{item_id}", headers=create_authorizaton_headers(access_token))
-
-    return response
 
 
 class TestDeleteItem:
@@ -32,8 +26,8 @@ class TestDeleteItem:
 
     def test_delete_item_fail_with_invalid_user(self, client):
         self._setup()
-        _, json_response = signin(client, credentials=self.users[1])
-        response = delete_item(client, item_id=self.items[0]["id"], access_token=json_response["access_token"])
+        access_token = generate_token(self.users[1])
+        response = delete_item(client, item_id=self.items[0]["id"], access_token=access_token)
         json_response = response.get_json()
 
         assert response.status_code == 403, "Forbidden credential call should return 403 status code"
@@ -50,4 +44,7 @@ class TestDeleteItem:
         assert json_response["error"] == {}
 
 
+def delete_item(client, item_id, access_token=None):
+    response = client.delete(f"/items/{item_id}", headers=create_authorizaton_headers(access_token))
 
+    return response

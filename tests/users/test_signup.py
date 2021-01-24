@@ -38,5 +38,3 @@ class TestSignUp:
         assert response.status_code == 400, "Invalid credential call should return 400 status code"
         assert json_response["message"] == "Invalid request data."
         assert json_response["error"] != {}, "Invalid request data should contain error body"
-
-

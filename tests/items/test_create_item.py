@@ -12,24 +12,24 @@ class TestCreateItem:
         self.categories = generate_categories()
         self.items = generate_items()
         self.access_token = generate_token(self.users[0]["id"])
+        self.category_id = self.categories[0]["id"]
+        self.new_item = {"name": "table", "description": "A table", "category_id": self.category_id}
 
     def test_create_item_successfully(self, client):
         self._setup()
-        category_id = self.categories[0]["id"]
-        new_item = {"name": "table", "description": "A table", "category_id": category_id}
-
-        response, json_response = create_item(client, access_token=self.access_token, category_id=category_id, data=new_item)
+        response, json_response = create_item(client, access_token=self.access_token, category_id=self.category_id,
+                                              data=self.new_item)
 
         assert response.status_code == 201, "Successful create item should return 201"
         assert ItemSchema().load(json_response), "All of object's data should be uniform"
 
     def test_create_item_fail_with_existed_item(self, client):
         self._setup()
-        category_id = self.categories[0]["id"]
         existed_name = self.items[0]["name"]
-        new_item = {"name": existed_name, "description": "A table", "category_id": category_id}
+        new_item = {"name": existed_name, "description": "A table", "category_id": self.category_id}
 
-        response, json_response = create_item(client, access_token=self.access_token, category_id=category_id, data=new_item)
+        response, json_response = create_item(client, access_token=self.access_token, category_id=self.category_id,
+                                              data=new_item)
 
         assert response.status_code == 400, "Invalid request call should return 400 status code"
         assert json_response["message"] == "Item lamp already existed."
@@ -45,7 +45,8 @@ class TestCreateItem:
     ])
     def test_create_item_fail_with_invalid_request_data(self, client, category_id, data):
         self._setup()
-        response, json_response = create_item(client, access_token=self.access_token, category_id=category_id, data=data)
+        response, json_response = create_item(client, access_token=self.access_token, category_id=category_id,
+                                              data=data)
 
         assert response.status_code == 400, "Invalid request call should return 400 status code"
         assert json_response["message"] == "Invalid request data."
@@ -53,10 +54,7 @@ class TestCreateItem:
 
     def test_create_item_fail_with_invalid_token(self, client):
         self._setup()
-        category_id = self.categories[0]["id"]
-        data = {"name": "table", "description": "A table", "category_id": category_id}
-
-        response, json_response = create_item(client, category_id=category_id, data=data)
+        response, json_response = create_item(client, category_id=self.category_id, data=self.new_item)
 
         assert response.status_code == 400, "Missing credentials call should return 400 status code"
         assert json_response["message"] == "Missing token. Please sign in first to perform this action."
@@ -67,7 +65,8 @@ class TestCreateItem:
         not_existed_category_id = 100
         new_item = {"name": "table", "description": "A table", "category_id": not_existed_category_id}
 
-        response, json_response = create_item(client, access_token=self.access_token, category_id=not_existed_category_id,
+        response, json_response = create_item(client, access_token=self.access_token,
+                                              category_id=not_existed_category_id,
                                               data=new_item)
 
         assert response.status_code == 404, "Not found error should return 404 status code"
@@ -76,9 +75,8 @@ class TestCreateItem:
 
 
 def create_item(client, category_id, data, access_token=None):
-    response = client.post(f"/categories/{category_id}/items", headers=create_authorizaton_headers(access_token), json=data)
+    response = client.post(f"/categories/{category_id}/items", headers=create_authorizaton_headers(access_token),
+                           json=data)
     json_response = response.get_json()
 
     return response, json_response
-
-

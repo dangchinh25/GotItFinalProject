@@ -26,5 +26,3 @@ def handle_customized_error(error):
 def handle_general_error(error):
     logging.exception(error)
     return jsonify({"message": "Internal server error", "error": {}})
-
-

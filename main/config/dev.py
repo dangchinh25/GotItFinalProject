@@ -6,4 +6,3 @@ class DevConfig(BaseConfig):
 
 
 config = DevConfig
-

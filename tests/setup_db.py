@@ -22,7 +22,10 @@ def generate_categories():
 
 
 def generate_users():
-    users = [{"id": 1, "username": "hizen", "password": "123456"}, {"id": 2, "username": "hizen2501", "password": "0123456"}]
+    users = [
+        {"id": 1, "username": "hizen", "password": "123456"},
+        {"id": 2, "username": "hizen2501", "password": "0123456"}
+    ]
     with app.app_context():
         for user in users:
             new_user = UserModel(username=user["username"], password=generate_hashed_password(user["password"]))

@@ -24,5 +24,3 @@ class ForbiddenError(BaseError):
 
 class NotFoundError(BaseError):
     status_code = 404
-
-

@@ -18,6 +18,3 @@ def signup(client, credentials):
     json_response = response.get_json()
 
     return response, json_response
-
-
-

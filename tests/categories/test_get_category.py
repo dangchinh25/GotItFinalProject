@@ -1,5 +1,5 @@
-from main.schemas.category import CategorySchema
 from tests.setup_db import generate_categories
+from main.schemas.category import CategorySchema
 
 
 class TestGetCategory:
@@ -20,7 +20,3 @@ class TestGetCategory:
         assert response.status_code == 404, "Not found error should return 404 status code"
         assert json_response["message"] == "Category with id 100 does not exist."
         assert json_response["error"] == {}
-
-
-
-

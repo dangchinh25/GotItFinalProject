@@ -31,6 +31,3 @@ class TestCurrentUser:
         assert response.status_code == 400, "Invalid credentials call should return 400 status code"
         assert json_response["message"] == "Missing token. Please sign in first to perform this action."
         assert json_response["error"] == {}
-
-
-

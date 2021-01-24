@@ -83,5 +83,3 @@ def create_category(user_id, data):
         raise SQLAlchemyError(error)
 
     return jsonify(CategorySchema().dump(new_category)), 201
-
-

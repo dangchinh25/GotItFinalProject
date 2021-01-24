@@ -97,7 +97,9 @@ def validate_pagination(func):
 
 
 def generate_token(user_id):
-    return jwt.encode({"user_id": user_id, "exp": datetime.utcnow() + timedelta(minutes=30)}, app.config["SECRET"], algorithm="HS256")
+    return jwt.encode({"user_id": user_id, "exp": datetime.utcnow() + timedelta(minutes=30)},
+                      app.config["SECRET"],
+                      algorithm="HS256")
 
 
 def generate_hashed_password(password):
@@ -106,4 +108,3 @@ def generate_hashed_password(password):
 
 def validate_hashed_password(password, hashed_password):
     return bcrypt.checkpw(password.encode("utf-8"), hashed_password.encode("utf-8"))
-

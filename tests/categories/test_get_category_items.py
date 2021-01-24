@@ -64,4 +64,3 @@ def create_url_with_parameters(category_id, limit, offset):
     if offset is None:
         return f"/categories/{category_id}/items?limit={limit}"
     return f"/categories/{category_id}/items?limit={limit}&offset={offset}"
-
