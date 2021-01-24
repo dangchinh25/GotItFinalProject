@@ -15,10 +15,3 @@ def client():
         db.create_all(app=app)
     return app.test_client()
 
-
-@pytest.fixture
-def access_token(client):
-    users = generate_users()
-
-    return generate_token(users[0]["id"])
-
