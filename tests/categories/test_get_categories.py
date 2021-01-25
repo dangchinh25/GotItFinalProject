@@ -13,4 +13,4 @@ class TestGetCategories:
         json_response = response.get_json()
         assert response.status_code == 200, "Successful call should return 200 status code"
         assert len(json_response) == len(self.categories)
-        assert CategorySchema(many=True).load(json_response), "All of object's data should be uniform"
+        assert CategorySchema(many=True).validate(json_response) == {}, "Validation should return empty error object"

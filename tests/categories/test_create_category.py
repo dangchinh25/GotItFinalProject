@@ -18,7 +18,7 @@ class TestCreateCategory:
                                                   category_name=self.new_category_name)
 
         assert response.status_code == 201, "Successful call should return 201 status code"
-        assert CategorySchema().load(json_response), "All of object's data should be uniform"
+        assert CategorySchema().validate(json_response) == {}, "Validation should return empty error object"
 
     def test_create_category_fail_with_existed_name(self, client):
         self._setup()

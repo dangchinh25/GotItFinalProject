@@ -16,7 +16,7 @@ class TestGetItem:
         response = client.get(f"/items/{item_id}")
         json_response = response.get_json()
         assert response.status_code == 200, "Successful call should return 200 status code"
-        assert ItemSchema().load(json_response), "All of object's data should be uniform"
+        assert ItemSchema().validate(json_response) == {}, "Validation should return empty error object"
 
     def test_get_item_fail_with_not_exist_item(self, client):
         response = client.get("/items/100")

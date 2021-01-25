@@ -22,7 +22,7 @@ class TestPutItem:
                                            access_token=self.access_token)
 
         assert response.status_code == 201, "Successful call should return 201 status code"
-        assert ItemSchema().load(json_response), "All of object's data should be uniform"
+        assert ItemSchema().validate(json_response) == {}, "Validation should return empty error object"
 
     @pytest.mark.parametrize("item_id, data", [
         (1, {"description": "Slightly better lamp", "category_id": 1}),  # Missing name

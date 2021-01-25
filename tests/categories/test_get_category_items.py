@@ -17,7 +17,7 @@ class TestGetCategoryItems:
         response = client.get(url)
         json_response = response.get_json()
         assert response.status_code == 200, "Successful call should return 200 status code"
-        assert ItemSchema(many=True).load(json_response["items"]), "All of object's data should be uniform"
+        assert ItemSchema(many=True).validate(json_response["items"]) == {}, "Validation should return empty error object"
 
     def test_get_category_items_fail_with_not_existed_category_id(self, client):
         self._setup()

@@ -21,7 +21,7 @@ class TestCreateItem:
                                               data=self.new_item)
 
         assert response.status_code == 201, "Successful create item should return 201"
-        assert ItemSchema().load(json_response), "All of object's data should be uniform"
+        assert ItemSchema().validate(json_response) == {}, "Validation should return empty error object"
 
     def test_create_item_fail_with_existed_item(self, client):
         self._setup()

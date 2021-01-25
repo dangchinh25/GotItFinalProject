@@ -12,7 +12,7 @@ class TestGetCategory:
         response = client.get(f"/categories/{category_id}")
         json_response = response.get_json()
         assert response.status_code == 200, "Successful call should return 200 status code"
-        assert CategorySchema().load(json_response), "All of object's data should be uniform"
+        assert CategorySchema().validate(json_response) == {}, "Validation should return empty error object"
 
     def test_get_category__fail_with_not_exist_id(self, client):
         response = client.get("/categories/100")
