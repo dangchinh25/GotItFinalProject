@@ -5,5 +5,6 @@ from main.models.item import ItemModel
 from main.models.category import CategoryModel
 
 
-with app.app_context():
-    db.create_all()
+def create_tables():
+    with app.app_context():
+        db.create_all()
