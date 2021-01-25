@@ -7,11 +7,10 @@ from create_tables import create_tables
 
 
 @call_parse
-def create_tables_script(init_tables: Param("Init tables", bool_arg)=False):
+def create_tables_script(init_tables: Param("Init tables", bool_arg) = False):
     if init_tables is True:
         create_tables()
 
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
-
